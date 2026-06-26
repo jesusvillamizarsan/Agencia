@@ -1,0 +1,25 @@
+# Dependencies
+vendor/
+node_modules/
+
+# Environment / config sensible
+.env
+.env.local
+config.local.php
+
+# Logs
+*.log
+logs/
+
+# Cache
+cache/
+tmp/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# XAMPP uploads / generados
+uploads/

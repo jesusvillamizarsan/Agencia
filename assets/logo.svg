@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" fill="none" role="img" aria-label="Jesús Villamizar AI">
+  <!-- Monogram mark -->
+  <rect x="0" y="4" width="40" height="40" rx="10" fill="#C9A535"/>
+  <!-- J -->
+  <path d="M13 14h8v18c0 3.3-2.7 6-6 6s-6-2.7-6-6v-2h4v2c0 1.1.9 2 2 2s2-.9 2-2V18h-4v-4z" fill="#0B1D3A"/>
+  <!-- V -->
+  <path d="M23 14h4.5l4.5 14 4.5-14H41l-6 20h-6l-6-20z" fill="#0B1D3A"/>
+
+  <!-- Wordmark -->
+  <text
+    x="52"
+    y="22"
+    font-family="'DM Serif Display', Georgia, serif"
+    font-size="16"
+    font-weight="400"
+    fill="#FFFFFF"
+    letter-spacing="0.5"
+  >Jesús Villamizar</text>
+  <text
+    x="52"
+    y="38"
+    font-family="'Inter', Arial, sans-serif"
+    font-size="10"
+    font-weight="600"
+    fill="#C9A535"
+    letter-spacing="2"
+  >AI AGENCY</text>
+</svg>
