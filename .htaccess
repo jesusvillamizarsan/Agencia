@@ -55,9 +55,10 @@ RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
     Header set Permissions-Policy "camera=(), microphone=(), geolocation=()"
 </IfModule>
 
-# ── Protect data directory ─────────────────────────────────
+# ── Protect data and includes directories ──────────────────
 <IfModule mod_rewrite.c>
     RewriteRule ^data/ - [F,L]
+    RewriteRule ^includes/ - [F,L]
 </IfModule>
 
 # ── Clean URLs for legal pages ─────────────────────────────
