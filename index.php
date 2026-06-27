@@ -180,7 +180,8 @@
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" as="style" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" /></noscript>
-  <link rel="preload" as="image" href="assets/logos/logo-horizontal-blanco.webp" type="image/webp" />
+  <link rel="preload" as="image" href="assets/logos/logo-horizontal-blanco.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="style" href="css/style.css" />
   <link rel="stylesheet" href="css/style.css" />
 
   <!-- Google Analytics — solo si el usuario aceptó cookies analíticas -->
