@@ -3,17 +3,184 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="meta.title">Jesús Villamizar · Agencia de Inteligencia Artificial en Madrid</title>
-  <meta name="description" data-i18n="meta.description" content="Consultoría y desarrollo de Inteligencia Artificial a medida para empresas en España y Europa. Machine Learning, Deep Learning, Agentes IA y automatización." />
-  <meta name="keywords" content="inteligencia artificial, machine learning, deep learning, agencia IA, Madrid, España, automatización, chatbots, agentes IA" />
-  <meta property="og:title" content="Jesús Villamizar · Agencia de Inteligencia Artificial" />
-  <meta property="og:description" content="Consultoría y desarrollo de IA a medida para empresas que quieren liderar el futuro." />
-  <meta property="og:url" content="https://jesusvillamizar.com" />
+  <title data-i18n="meta.title">Agencia de Inteligencia Artificial Madrid · Jesús Villamizar</title>
+  <meta name="description" data-i18n="meta.description" content="Consultoría y desarrollo de IA a medida para empresas en España y Europa. Machine Learning, chatbots, agentes autónomos. Solicita tu diagnóstico gratis." />
+  <meta name="keywords" content="agencia inteligencia artificial madrid, consultoría IA empresas españa, machine learning, deep learning, chatbots IA, automatización procesos IA, agentes IA autónomos, MLOps" />
+  <meta name="robots" content="index, follow" />
+  <meta name="geo.region" content="ES-MD" />
+  <meta name="geo.placename" content="Madrid" />
+  <meta property="og:title" content="Agencia de Inteligencia Artificial Madrid · Jesús Villamizar" />
+  <meta property="og:description" content="Consultoría y desarrollo de IA a medida para empresas en España y Europa. Machine Learning, chatbots, agentes autónomos. Solicita tu diagnóstico gratis." />
+  <meta property="og:image" content="https://jesusvillamizar.com/assets/img/og-image.php" />
+  <meta property="og:image:alt" content="Jesús Villamizar, AI Engineer · Agencia de Inteligencia Artificial Madrid" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://jesusvillamizar.com/" />
   <meta property="og:type" content="website" />
-  <link rel="canonical" href="https://jesusvillamizar.com" />
+  <meta property="og:locale" content="es_ES" />
+  <meta property="og:site_name" content="Jesús Villamizar AI Agency" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Agencia de Inteligencia Artificial Madrid · Jesús Villamizar" />
+  <meta name="twitter:description" content="Consultoría y desarrollo de IA a medida para empresas en España y Europa. Machine Learning, chatbots, agentes autónomos." />
+  <meta name="twitter:image" content="https://jesusvillamizar.com/assets/img/og-image.php" />
+  <link rel="canonical" href="https://jesusvillamizar.com/" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="assets/favicon.svg" sizes="any" />
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://jesusvillamizar.com/#website",
+        "name": "Jesús Villamizar AI Agency",
+        "url": "https://jesusvillamizar.com",
+        "inLanguage": ["es", "en"],
+        "publisher": { "@id": "https://jesusvillamizar.com/#business" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://jesusvillamizar.com/#person",
+        "name": "Jesús Villamizar",
+        "jobTitle": "AI Engineer & Machine Learning Specialist",
+        "description": "Ingeniero de IA con más de 8 años de experiencia y Máster en Machine Learning y Deep Learning. Fundador de agencia de IA en Madrid.",
+        "url": "https://jesusvillamizar.com",
+        "email": "hello@jesusvillamizar.com",
+        "image": "https://jesusvillamizar.com/assets/img/perfilfoto.jpg",
+        "knowsAbout": [
+          "Inteligencia Artificial",
+          "Machine Learning",
+          "Deep Learning",
+          "MLOps",
+          "Procesamiento de Lenguaje Natural",
+          "Visión Artificial",
+          "Agentes IA Autónomos",
+          "Automatización de Procesos con IA",
+          "Consultoría Estratégica IA"
+        ],
+        "sameAs": [
+          "https://www.linkedin.com/in/villamizarsan/",
+          "https://github.com/jesusvillamizar"
+        ],
+        "knowsLanguage": ["es", "en"],
+        "nationality": { "@type": "Country", "name": "Venezuela" },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Madrid",
+          "addressCountry": "ES"
+        }
+      },
+      {
+        "@type": "ProfessionalService",
+        "@id": "https://jesusvillamizar.com/#business",
+        "name": "Jesús Villamizar · Agencia de Inteligencia Artificial",
+        "description": "Consultoría y desarrollo de Inteligencia Artificial a medida para empresas en España y Europa. Machine Learning, Deep Learning, Agentes IA y automatización.",
+        "url": "https://jesusvillamizar.com",
+        "email": "hello@jesusvillamizar.com",
+        "logo": "https://jesusvillamizar.com/assets/logos/logo-horizontal-negro.png",
+        "image": "https://jesusvillamizar.com/assets/img/perfilfoto.jpg",
+        "founder": { "@id": "https://jesusvillamizar.com/#person" },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Madrid",
+          "addressCountry": "ES"
+        },
+        "areaServed": ["ES", "FR", "DE", "IT", "PT", "NL", "BE"],
+        "serviceType": [
+          "Consultoría de Inteligencia Artificial",
+          "Desarrollo de Chatbots",
+          "Automatización de Procesos con IA",
+          "Machine Learning",
+          "Deep Learning",
+          "Agentes IA Autónomos",
+          "MLOps"
+        ],
+        "foundingDate": "2024",
+        "priceRange": "€990 - €2490/mes",
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Servicios de IA",
+          "itemListElement": [
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Consultoría Estratégica IA" } },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Plan Starter — Chatbot o Asistente Virtual" },
+              "priceSpecification": { "@type": "UnitPriceSpecification", "price": "990", "priceCurrency": "EUR", "billingDuration": "P1M" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Plan Business — Automatización de Procesos con IA" },
+              "priceSpecification": { "@type": "UnitPriceSpecification", "price": "2490", "priceCurrency": "EUR", "billingDuration": "P1M" }
+            },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Modelos ML Personalizados" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Deep Learning" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Agentes IA Autónomos" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "MLOps & Producción" } }
+          ]
+        },
+        "sameAs": [
+          "https://www.linkedin.com/in/villamizarsan/",
+          "https://github.com/jesusvillamizar"
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://jesusvillamizar.com/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Cuánto cuesta implementar Inteligencia Artificial en una empresa?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "El coste depende del alcance del proyecto. Nuestros planes empiezan desde 990€/mes para un primer chatbot o asistente virtual, y el plan Business con automatización de procesos está a 2.490€/mes. Los proyectos enterprise de Deep Learning o MLOps se presupuestan a medida."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cuánto tiempo tarda en desarrollarse un proyecto de IA?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Los primeros resultados visibles se producen en las primeras semanas. Un chatbot básico puede estar operativo en 2-4 semanas. Proyectos de automatización compleja o modelos ML a medida requieren entre 2 y 4 meses."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Necesito datos históricos para empezar con Inteligencia Artificial?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No siempre. Para servicios de consultoría estratégica o chatbots basados en LLM no son necesarios datos históricos propios. Para modelos predictivos (Machine Learning) sí se requiere un conjunto de datos mínimo, que evaluamos en el diagnóstico inicial gratuito."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Trabajáis con empresas fuera de Madrid?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sí. Aunque tenemos base en Madrid, trabajamos de forma remota con empresas en toda España y Europa. Hemos desarrollado proyectos para clientes en España, Francia, Alemania, Italia y Portugal."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Qué diferencia hay entre un chatbot y un agente IA autónomo?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Un chatbot responde preguntas dentro de un flujo predefinido. Un agente IA autónomo razona, planifica y ejecuta tareas complejas de forma independiente — puede consultar bases de datos, llamar a APIs, tomar decisiones y aprender de los resultados sin intervención humana constante."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" as="style" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" /></noscript>
+  <link rel="preload" as="image" href="assets/logos/logo-horizontal-blanco.png" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -22,7 +189,7 @@
 <header id="header">
   <nav class="nav container">
     <a href="#hero" class="nav__logo">
-      <img src="assets/logo.svg" alt="Jesús Villamizar AI" class="nav__logo-img" />
+      <img src="assets/logos/logo-horizontal-blanco.png" alt="Jesús Villamizar AI Agency · Agencia de Inteligencia Artificial en Madrid" class="nav__logo-img" fetchpriority="high" />
     </a>
 
     <ul class="nav__links" id="navLinks">
@@ -251,7 +418,7 @@
     <div class="about__visual reveal">
       <div class="about__img-wrap">
         <div class="about__img-placeholder">
-          <img src="assets/img/perfilfoto.jpg" alt="Jesús Villamizar" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
+          <img src="assets/img/perfilfoto.jpg" alt="Jesús Villamizar, ingeniero de inteligencia artificial y fundador de agencia IA en Madrid" loading="lazy" width="500" height="500" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
         </div>
         <div class="about__badge-float">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2l2.4 5.2 5.6.8-4 3.9.9 5.6L10 14.8l-4.9 2.7.9-5.6L2 8l5.6-.8L10 2z" fill="#C9A535"/></svg>
@@ -338,11 +505,11 @@
 </section>
 
 <!-- ═══════════════════════ POR QUÉ ELEGIRNOS ═══════════════════════ -->
-<section class="section section--white">
+<section id="por-que" class="section section--white">
   <div class="container">
     <div class="section-header reveal">
       <span class="section-badge" data-i18n="why.badge">Por qué elegirnos</span>
-      <h2 class="section-title" data-i18n="why.title">IA de primer nivel, sin complicaciones</h2>
+      <h2 class="section-title" data-i18n="why.title">Por qué elegir nuestra consultoría de Inteligencia Artificial</h2>
     </div>
     <div class="why-grid">
       <div class="why-card reveal">
@@ -506,7 +673,7 @@
         </div>
         <div class="form-group">
           <label for="message" data-i18n="contact.form.message">Cuéntame tu proyecto</label>
-          <textarea id="message" name="message" rows="5" required data-i18n-placeholder="contact.form.messagePh" placeholder="Describe brevemente tu empresa, el problema que quieres resolver y cualquier detalle relevante..."></textarea>
+          <textarea id="message" name="message" rows="5" required maxlength="3000" data-i18n-placeholder="contact.form.messagePh" placeholder="Describe brevemente tu empresa, el problema que quieres resolver y cualquier detalle relevante..."></textarea>
         </div>
         <div class="form-group form-group--checkbox">
           <label class="checkbox-label">
@@ -514,9 +681,42 @@
             <span data-i18n="contact.form.privacy">Acepto la <a href="/privacidad" target="_blank">política de privacidad</a></span>
           </label>
         </div>
+        <input type="text" name="website" style="display:none;position:absolute;left:-9999px" tabindex="-1" autocomplete="off" aria-hidden="true">
         <button type="submit" class="btn btn--gold btn--full" data-i18n="contact.form.submit">Enviar mensaje</button>
         <div id="formMsg" class="form-msg" aria-live="polite"></div>
       </form>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ FAQ ═══════════════════════ -->
+<section id="faq" class="section section--navy">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-badge section-badge--light" data-i18n="faq.badge">Preguntas frecuentes</span>
+      <h2 class="section-title section-title--light" data-i18n="faq.title">Todo lo que necesitas saber</h2>
+    </div>
+    <div class="faq-list reveal">
+      <details class="faq-item">
+        <summary data-i18n="faq.q1">¿Cuánto cuesta implementar Inteligencia Artificial en una empresa?</summary>
+        <p data-i18n="faq.a1">Nuestros planes empiezan desde 990€/mes para un primer chatbot o asistente virtual, y el plan Business con automatización de procesos está a 2.490€/mes. Los proyectos enterprise de Deep Learning o MLOps se presupuestan a medida según el alcance.</p>
+      </details>
+      <details class="faq-item">
+        <summary data-i18n="faq.q2">¿Cuánto tiempo tarda en desarrollarse un proyecto de IA?</summary>
+        <p data-i18n="faq.a2">Un chatbot básico puede estar operativo en 2-4 semanas. Proyectos de automatización compleja o modelos ML a medida requieren entre 2 y 4 meses. Los primeros resultados visibles se producen en las primeras semanas.</p>
+      </details>
+      <details class="faq-item">
+        <summary data-i18n="faq.q3">¿Necesito datos históricos para empezar con Inteligencia Artificial?</summary>
+        <p data-i18n="faq.a3">No siempre. Para chatbots basados en LLM no son necesarios datos históricos propios. Para modelos predictivos (Machine Learning) sí se requiere un conjunto de datos mínimo, que evaluamos gratuitamente en el diagnóstico inicial.</p>
+      </details>
+      <details class="faq-item">
+        <summary data-i18n="faq.q4">¿Trabajáis con empresas fuera de Madrid?</summary>
+        <p data-i18n="faq.a4">Sí. Aunque tenemos base en Madrid, trabajamos de forma remota con empresas en toda España y Europa — Francia, Alemania, Italia, Portugal y más.</p>
+      </details>
+      <details class="faq-item">
+        <summary data-i18n="faq.q5">¿Qué diferencia hay entre un chatbot y un agente IA autónomo?</summary>
+        <p data-i18n="faq.a5">Un chatbot responde preguntas dentro de un flujo predefinido. Un agente IA autónomo razona, planifica y ejecuta tareas complejas de forma independiente — consulta bases de datos, llama a APIs y toma decisiones sin intervención humana constante.</p>
+      </details>
     </div>
   </div>
 </section>
@@ -525,7 +725,7 @@
 <footer class="footer">
   <div class="container footer__inner">
     <div class="footer__brand">
-      <img src="assets/logo.svg" alt="Jesús Villamizar AI" class="footer__logo" />
+      <img src="assets/logos/logo-horizontal-blanco.png" alt="Jesús Villamizar AI Agency" class="footer__logo" loading="lazy" />
       <p class="footer__tagline" data-i18n="footer.tagline">Inteligencia Artificial a medida para empresas con ambición.</p>
       <div class="footer__socials">
         <a href="https://www.linkedin.com/in/villamizarsan/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
@@ -589,6 +789,11 @@
           <p class="chat-header__status"><span class="chat-status-dot"></span>Online</p>
         </div>
       </div>
+      <button id="chat-clear" class="chat-clear-btn" title="Limpiar conversación" aria-label="Limpiar conversación">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
 
     <div id="chat-messages" class="chat-messages" role="log" aria-live="polite">

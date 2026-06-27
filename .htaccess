@@ -45,7 +45,19 @@ RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
     Header set X-Frame-Options "SAMEORIGIN"
     Header set X-XSS-Protection "1; mode=block"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header set Permissions-Policy "camera=(), microphone=(), geolocation=()"
 </IfModule>
+
+# ── Protect data directory ─────────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteRule ^data/ - [F,L]
+</IfModule>
+
+# ── Clean URLs for legal pages ─────────────────────────────
+RewriteRule ^privacidad/?$ privacidad.php [L]
+RewriteRule ^aviso-legal/?$ aviso-legal.php [L]
+RewriteRule ^cookies/?$ cookies.php [L]
 
 # ── PHP security ───────────────────────────────────────────
 <IfModule mod_php.c>

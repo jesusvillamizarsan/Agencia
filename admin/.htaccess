@@ -1,0 +1,8 @@
+# Block directory listing
+Options -Indexes
+
+# Only allow PHP files — block direct access to anything else
+<FilesMatch "^(?!index|agenda|logout).*\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

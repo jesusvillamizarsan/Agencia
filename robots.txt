@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /php/
+Disallow: /admin/
+Disallow: /data/
+Disallow: /.env
+Disallow: /assets/img/og-image.php
+Disallow: /.claude/
+Disallow: /.tickets/
+
+Sitemap: https://jesusvillamizar.com/sitemap.xml

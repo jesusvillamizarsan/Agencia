@@ -67,7 +67,19 @@ const T = {
     "process.s4.title": "Despliegue y Soporte",
     "process.s4.desc": "Llevamos la solución a producción, formamos a tu equipo y ofrecemos soporte continuo para asegurar que el sistema mejora con el tiempo.",
     "why.badge": "Por qué elegirnos",
-    "why.title": "IA de primer nivel, sin complicaciones",
+    "why.title": "Por qué elegir nuestra consultoría de Inteligencia Artificial",
+    "faq.badge": "Preguntas frecuentes",
+    "faq.title": "Todo lo que necesitas saber",
+    "faq.q1": "¿Cuánto cuesta implementar Inteligencia Artificial en una empresa?",
+    "faq.a1": "Nuestros planes empiezan desde 990€/mes para un primer chatbot o asistente virtual, y el plan Business con automatización de procesos está a 2.490€/mes. Los proyectos enterprise se presupuestan a medida.",
+    "faq.q2": "¿Cuánto tiempo tarda en desarrollarse un proyecto de IA?",
+    "faq.a2": "Un chatbot básico puede estar operativo en 2-4 semanas. Proyectos de automatización compleja o modelos ML a medida requieren entre 2 y 4 meses.",
+    "faq.q3": "¿Necesito datos históricos para empezar con Inteligencia Artificial?",
+    "faq.a3": "No siempre. Para chatbots basados en LLM no son necesarios datos propios. Para modelos predictivos sí se requiere un conjunto de datos mínimo, que evaluamos gratuitamente en el diagnóstico inicial.",
+    "faq.q4": "¿Trabajáis con empresas fuera de Madrid?",
+    "faq.a4": "Sí. Trabajamos de forma remota con empresas en toda España y Europa — Francia, Alemania, Italia, Portugal y más.",
+    "faq.q5": "¿Qué diferencia hay entre un chatbot y un agente IA autónomo?",
+    "faq.a5": "Un chatbot responde preguntas en un flujo predefinido. Un agente IA autónomo razona, planifica y ejecuta tareas complejas de forma independiente — consulta bases de datos, llama a APIs y toma decisiones sin intervención humana constante.",
     "why.w1.title": "Formación Académica de Alto Nivel",
     "why.w1.desc": "Máster en Machine Learning y Deep Learning. Conocimiento teórico sólido aplicado a problemas reales de negocio.",
     "why.w2.title": "Resultados Medibles",
@@ -222,7 +234,19 @@ const T = {
     "process.s4.title": "Deployment & Support",
     "process.s4.desc": "We take the solution to production, train your team and offer ongoing support to ensure the system improves over time.",
     "why.badge": "Why choose us",
-    "why.title": "Top-tier AI, without the complexity",
+    "why.title": "Why choose our Artificial Intelligence consultancy",
+    "faq.badge": "Frequently asked questions",
+    "faq.title": "Everything you need to know",
+    "faq.q1": "How much does it cost to implement Artificial Intelligence in a company?",
+    "faq.a1": "Our plans start from €990/month for a first chatbot or virtual assistant, and the Business plan with process automation is €2,490/month. Enterprise projects are custom-quoted based on scope.",
+    "faq.q2": "How long does an AI project take to develop?",
+    "faq.a2": "A basic chatbot can be operational in 2-4 weeks. Complex automation or custom ML model projects require between 2 and 4 months.",
+    "faq.q3": "Do I need historical data to get started with Artificial Intelligence?",
+    "faq.a3": "Not always. For LLM-based chatbots, your own historical data is not required. For predictive models, a minimum dataset is needed — which we evaluate free of charge in the initial diagnostic.",
+    "faq.q4": "Do you work with companies outside Madrid?",
+    "faq.a4": "Yes. Although we are based in Madrid, we work remotely with companies across Spain and Europe — France, Germany, Italy, Portugal and more.",
+    "faq.q5": "What is the difference between a chatbot and an autonomous AI agent?",
+    "faq.a5": "A chatbot responds to questions within a predefined flow. An autonomous AI agent reasons, plans and executes complex tasks independently — querying databases, calling APIs and making decisions without constant human intervention.",
     "why.w1.title": "High-Level Academic Training",
     "why.w1.desc": "Master's in Machine Learning and Deep Learning. Solid theoretical knowledge applied to real business problems.",
     "why.w2.title": "Measurable Results",
@@ -347,7 +371,7 @@ function applyTranslations(lang) {
   });
 
   currentLang = lang;
-  localStorage.setItem('jv_lang', lang);
+  try { localStorage.setItem('jv_lang', lang); } catch (_) {}
 }
 
 /* ─── Language Toggle ────────────────────────────────────────── */
@@ -389,6 +413,24 @@ function initMobileMenu() {
       burger.classList.remove('open');
       document.body.style.overflow = '';
     });
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && links.classList.contains('open')) {
+      links.classList.remove('open');
+      burger.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Close on click outside the nav
+  document.addEventListener('click', e => {
+    if (links.classList.contains('open') && !links.contains(e.target) && !burger.contains(e.target)) {
+      links.classList.remove('open');
+      burger.classList.remove('open');
+      document.body.style.overflow = '';
+    }
   });
 }
 
@@ -525,6 +567,25 @@ function executeActions(actions) {
 }
 
 /* ─── Chat Widget ────────────────────────────────────────────── */
+const CHAT_STORAGE_KEY = 'jv_chat_history';
+const CHAT_MAX_STORED  = 20; // máximo de mensajes a persistir
+
+function saveChatHistory(hist) {
+  try {
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(hist.slice(-CHAT_MAX_STORED)));
+  } catch (e) { console.warn('Chat storage error:', e); }
+}
+
+function loadChatHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '[]');
+  } catch (e) { console.warn('Chat storage error:', e); return []; }
+}
+
+function clearChatHistory() {
+  try { localStorage.removeItem(CHAT_STORAGE_KEY); } catch (e) { console.warn('Chat storage error:', e); }
+}
+
 function initChatbot() {
   const widget   = document.getElementById('chat-widget');
   const toggle   = document.getElementById('chat-toggle');
@@ -533,6 +594,7 @@ function initChatbot() {
   const form     = document.getElementById('chat-form');
   const input    = document.getElementById('chat-input');
   const sendBtn  = form.querySelector('.chat-send');
+  const clearBtn = document.getElementById('chat-clear');
   if (!widget) return;
 
   const greetings = {
@@ -540,9 +602,21 @@ function initChatbot() {
     en: 'Hi! I\'m the assistant for Jesús Villamizar\'s AI Agency. How can I help you today? I can tell you about our AI services, pricing, or answer any questions you have.',
   };
 
-  let history     = [];
-  let isOpen      = false;
-  let isThinking  = false;
+  let history    = loadChatHistory();
+  let isOpen     = false;
+  let isThinking = false;
+
+  // Paint saved messages on load
+  function restoreHistory() {
+    history.forEach(turn => {
+      const role = turn.role === 'user' ? 'user' : 'bot';
+      const div = document.createElement('div');
+      div.className = `chat-msg chat-msg--${role}`;
+      div.textContent = turn.content;
+      messages.appendChild(div);
+    });
+    if (history.length) messages.scrollTop = messages.scrollHeight;
+  }
 
   // Update greeting based on language
   function syncGreeting() {
@@ -583,6 +657,7 @@ function initChatbot() {
 
     addMessage(text, 'user');
     history.push({ role: 'user', content: text });
+    saveChatHistory(history);
 
     showTyping();
 
@@ -599,6 +674,7 @@ function initChatbot() {
       if (data.reply) {
         addMessage(data.reply, 'bot');
         history.push({ role: 'assistant', content: data.reply });
+        saveChatHistory(history);
         if (data.actions && data.actions.length) {
           setTimeout(() => executeActions(data.actions), 600);
         }
@@ -621,8 +697,15 @@ function initChatbot() {
     }
   }
 
+  // Restore history on init
+  restoreHistory();
+
+  // Pulse CTA animation — stops on first click
+  toggle.classList.add('is-pulsing');
+
   // Toggle open/close
   toggle.addEventListener('click', () => {
+    toggle.classList.remove('is-pulsing');
     isOpen = !isOpen;
     widget.classList.toggle('is-open', isOpen);
     window_.setAttribute('aria-hidden', String(!isOpen));
@@ -631,6 +714,15 @@ function initChatbot() {
       input.focus();
     }
   });
+
+  // Clear history button
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      history = [];
+      clearChatHistory();
+      messages.innerHTML = `<div class="chat-msg chat-msg--bot"><p data-chat-greeting="${currentLang}">${greetings[currentLang]}</p></div>`;
+    });
+  }
 
   // Form submit
   form.addEventListener('submit', e => {
