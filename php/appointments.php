@@ -173,6 +173,18 @@ function confirmAppointment(string $token): array {
     return ['ok' => false, 'error' => 'not_found'];
 }
 
+// ── Store lead analysis ────────────────────────────────────
+function storeLeadAnalysis(string $code, array $analysis): void {
+    $data = readJson(APPOINTMENTS_FILE);
+    foreach ($data['appointments'] as &$a) {
+        if ($a['code'] === $code) {
+            $a['lead_analysis'] = $analysis;
+            break;
+        }
+    }
+    writeJson(APPOINTMENTS_FILE, $data);
+}
+
 // ── Get appointment ────────────────────────────────────────
 function getAppointment(string $email, string $code): array {
     $data = readJson(APPOINTMENTS_FILE);

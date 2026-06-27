@@ -90,7 +90,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $avail = ['slots' => []];
     }
 
-    if ($action === 'add_slots') {
+    if ($action === 'cancel_appointment') {
+        $code = strtoupper(trim($_POST['code'] ?? ''));
+        $appt_data = read_json(APPT_FILE);
+        $found = false;
+        foreach ($appt_data['appointments'] as &$a) {
+            if ($a['code'] === $code && in_array($a['status'] ?? '', ['confirmed', 'pending'])) {
+                $a['status']       = 'cancelled';
+                $a['cancelled_at'] = date('c');
+                $found = true;
+                // Send cancellation email if was confirmed
+                if ($a['status'] !== 'pending') {
+                    require_once __DIR__ . '/../php/appointments.php';
+                    sendCancellationEmail($a);
+                }
+                break;
+            }
+        }
+        write_json(APPT_FILE, $appt_data);
+        if (is_json_request()) json_response(['ok' => $found]);
+        $_SESSION['flash'] = ['msg' => $found ? 'Cita cancelada.' : 'Cita no encontrada.', 'type' => $found ? 'success' : 'error'];
+        header("Location: agenda.php?month={$view_month}&day={$selected_day}");
+        exit;
+
+    } elseif ($action === 'delete_appointment') {
+        $code = strtoupper(trim($_POST['code'] ?? ''));
+        $appt_data = read_json(APPT_FILE);
+        $before = count($appt_data['appointments'] ?? []);
+        $appt_data['appointments'] = array_values(array_filter($appt_data['appointments'] ?? [], fn($a) => $a['code'] !== $code));
+        $deleted = count($appt_data['appointments']) < $before;
+        write_json(APPT_FILE, $appt_data);
+        if (is_json_request()) json_response(['ok' => $deleted]);
+        $_SESSION['flash'] = ['msg' => $deleted ? 'Cita eliminada.' : 'Cita no encontrada.', 'type' => $deleted ? 'success' : 'error'];
+        header("Location: agenda.php?month={$view_month}&day={$selected_day}");
+        exit;
+
+    } elseif ($action === 'save_note') {
+        $code = strtoupper(trim($_POST['code'] ?? ''));
+        $note = mb_substr(trim($_POST['note'] ?? ''), 0, 500);
+        $appt_data = read_json(APPT_FILE);
+        $found = false;
+        foreach ($appt_data['appointments'] as &$a) {
+            if ($a['code'] === $code) { $a['admin_note'] = $note; $found = true; break; }
+        }
+        write_json(APPT_FILE, $appt_data);
+        if (is_json_request()) json_response(['ok' => $found]);
+        $_SESSION['flash'] = ['msg' => 'Nota guardada.', 'type' => 'success'];
+        header("Location: agenda.php?month={$view_month}&day={$selected_day}");
+        exit;
+
+    } elseif ($action === 'add_slots') {
         $date      = trim($_POST['date']      ?? '');
         $from_time = trim($_POST['from_time'] ?? '');
         $to_time   = trim($_POST['to_time']   ?? '');
@@ -204,19 +253,24 @@ foreach ($slots_all as $s) {
     $slots_by_date[$d][] = $t;
 }
 
-$appts_by_date = [];
+$appts_by_date   = [];
 $confirmed_appts = [];
+$pending_appts   = [];
+$now_ts          = time();
+
 foreach ($appointments_all as $a) {
-    if (($a['status'] ?? '') === 'confirmed') {
+    $status = $a['status'] ?? '';
+    if ($status === 'confirmed') {
         $appts_by_date[$a['date']][] = $a;
-        if ($a['date'] >= $today) {
-            $confirmed_appts[] = $a;
-        }
+        if ($a['date'] >= $today) $confirmed_appts[] = $a;
+    } elseif ($status === 'pending' && ($a['expires_at'] ?? 0) > $now_ts) {
+        $appts_by_date[$a['date']][] = $a;
+        if ($a['date'] >= $today) $pending_appts[] = $a;
     }
 }
 
-// Sort upcoming appointments
 usort($confirmed_appts, fn($a, $b) => strcmp("$a[date] $a[time]", "$b[date] $b[time]"));
+usort($pending_appts,   fn($a, $b) => strcmp("$a[date] $a[time]", "$b[date] $b[time]"));
 $confirmed_appts = array_slice($confirmed_appts, 0, 10);
 
 // ── Calendar grid ─────────────────────────────────────────────
@@ -239,6 +293,18 @@ $panel_slots = $slots_by_date[$selected_day] ?? [];
 sort($panel_slots);
 $panel_appts = $appts_by_date[$selected_day] ?? [];
 usort($panel_appts, fn($a, $b) => strcmp($a['time'], $b['time']));
+
+// Helper: score color
+function scoreColor(int $score): string {
+    if ($score >= 7) return '#059669';
+    if ($score >= 4) return '#D97706';
+    return '#DC2626';
+}
+function scoreBg(int $score): string {
+    if ($score >= 7) return '#D1FAE5';
+    if ($score >= 4) return '#FEF3C7';
+    return '#FEE2E2';
+}
 
 // Spanish formatted date for panel
 $panel_ts   = strtotime($selected_day);
@@ -864,7 +930,9 @@ $panel_date_label = date('j', $panel_ts) . ' de ' . strtolower($month_names_es[(
                             $is_selected = ($date_str === $selected_day);
                             $is_past     = ($date_str < $today);
                             $n_slots     = count($slots_by_date[$date_str] ?? []);
-                            $n_appts     = count($appts_by_date[$date_str] ?? []);
+                            $day_appts   = $appts_by_date[$date_str] ?? [];
+                            $n_appts     = count(array_filter($day_appts, fn($a) => ($a['status'] ?? '') === 'confirmed'));
+                            $n_pending   = count(array_filter($day_appts, fn($a) => ($a['status'] ?? '') === 'pending'));
 
                             $cls = 'cal-day';
                             if ($is_today)    $cls .= ' cal-day--today';
@@ -883,6 +951,9 @@ $panel_date_label = date('j', $panel_ts) . ' de ' . strtolower($month_names_es[(
                                 <?php endif; ?>
                                 <?php if ($n_appts > 0): ?>
                                 <span class="cal-badge cal-badge--appt"><?= $n_appts ?></span>
+                                <?php endif; ?>
+                                <?php if ($n_pending > 0): ?>
+                                <span class="cal-badge" style="background:#D97706;color:#fff"><?= $n_pending ?>?</span>
                                 <?php endif; ?>
                             </div>
                         <?php if (!$is_past): ?>
@@ -977,21 +1048,71 @@ $panel_date_label = date('j', $panel_ts) . ' de ' . strtolower($month_names_es[(
                     <?php if ($panel_appts): ?>
                     <div class="panel-section">
                         <p class="panel-section__label">
-                            Citas confirmadas
+                            Citas del día
                             <span class="badge-count" style="background:var(--green);color:var(--white)"><?= count($panel_appts) ?></span>
                         </p>
-                        <?php foreach ($panel_appts as $a): ?>
-                        <div class="appt-item">
-                            <span class="appt-time"><?= htmlspecialchars($a['time']) ?></span>
-                            <span class="appt-name"><?= htmlspecialchars($a['name']) ?></span>
+                        <?php foreach ($panel_appts as $a):
+                            $isPending  = ($a['status'] ?? '') === 'pending';
+                            $analysis   = $a['lead_analysis'] ?? null;
+                            $score      = (int)($analysis['score'] ?? 0);
+                            $accentColor = $isPending ? '#D97706' : 'var(--green)';
+                        ?>
+                        <div class="appt-item" style="border-left: 3px solid <?= $accentColor ?>; margin-bottom:.75rem">
+                            <span class="appt-time" style="background:<?= $accentColor ?>"><?= htmlspecialchars($a['time']) ?></span>
+                            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem">
+                                <span class="appt-name"><?= htmlspecialchars($a['name']) ?></span>
+                                <?php if ($isPending): ?>
+                                <span style="font-size:.7rem;background:#FEF3C7;color:#92400E;padding:2px 7px;border-radius:10px;font-weight:600;white-space:nowrap">Pendiente</span>
+                                <?php elseif ($score > 0): ?>
+                                <span style="font-size:.75rem;background:<?= scoreBg($score) ?>;color:<?= scoreColor($score) ?>;padding:2px 8px;border-radius:10px;font-weight:700;white-space:nowrap"><?= $score ?>/10</span>
+                                <?php endif; ?>
+                            </div>
                             <div class="appt-meta">
                                 <span><?= htmlspecialchars($a['email']) ?></span>
-                                <?php if (!empty($a['phone'])): ?>
-                                <span><?= htmlspecialchars($a['phone']) ?></span>
-                                <?php endif; ?>
-                                <?php if (!empty($a['code'])): ?>
+                                <?php if (!empty($a['phone'])): ?><span><?= htmlspecialchars($a['phone']) ?></span><?php endif; ?>
                                 <span style="color:var(--text-light);font-size:.72rem">Ref: <?= htmlspecialchars($a['code']) ?></span>
+                            </div>
+
+                            <?php if ($analysis): ?>
+                            <div style="grid-column:1/-1;margin-top:.5rem;padding:.6rem .75rem;background:<?= scoreBg($score) ?>;border-radius:7px;font-size:.78rem">
+                                <strong style="color:<?= scoreColor($score) ?>"><?= htmlspecialchars($analysis['label'] ?? '') ?></strong>
+                                <?php if (!empty($analysis['summary'])): ?>
+                                <p style="margin:.3rem 0 0;color:#374151"><?= htmlspecialchars($analysis['summary']) ?></p>
                                 <?php endif; ?>
+                                <?php if (!empty($analysis['signals'])): ?>
+                                <p style="margin:.4rem 0 0;color:#065F46">&#10003; <?= htmlspecialchars(implode(' · ', $analysis['signals'])) ?></p>
+                                <?php endif; ?>
+                                <?php if (!empty($analysis['alerts'])): ?>
+                                <p style="margin:.2rem 0 0;color:#991B1B">&#9888; <?= htmlspecialchars(implode(' · ', $analysis['alerts'])) ?></p>
+                                <?php endif; ?>
+                            </div>
+                            <?php endif; ?>
+
+                            <!-- Note -->
+                            <div style="grid-column:1/-1;margin-top:.4rem">
+                                <form method="POST" action="?month=<?= $view_month ?>&day=<?= $selected_day ?>" style="display:flex;gap:.4rem;align-items:center">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                                    <input type="hidden" name="action" value="save_note">
+                                    <input type="hidden" name="code" value="<?= htmlspecialchars($a['code']) ?>">
+                                    <input type="text" name="note" placeholder="Nota interna..." value="<?= htmlspecialchars($a['admin_note'] ?? '') ?>" style="flex:1;padding:.35rem .6rem;border:1px solid var(--border);border-radius:6px;font-size:.78rem;font-family:inherit;outline:none">
+                                    <button type="submit" style="padding:.35rem .7rem;background:var(--navy);color:#fff;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;border:none">Guardar</button>
+                                </form>
+                            </div>
+
+                            <!-- Actions -->
+                            <div style="grid-column:1/-1;display:flex;gap:.4rem;margin-top:.35rem">
+                                <form method="POST" action="?month=<?= $view_month ?>&day=<?= $selected_day ?>" onsubmit="return confirm('¿Cancelar esta cita?')">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                                    <input type="hidden" name="action" value="cancel_appointment">
+                                    <input type="hidden" name="code" value="<?= htmlspecialchars($a['code']) ?>">
+                                    <button type="submit" style="padding:.3rem .65rem;border:1px solid #FCA5A5;background:#FEF2F2;color:#DC2626;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer">Cancelar</button>
+                                </form>
+                                <form method="POST" action="?month=<?= $view_month ?>&day=<?= $selected_day ?>" onsubmit="return confirm('¿Eliminar permanentemente esta cita del registro?')">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                                    <input type="hidden" name="action" value="delete_appointment">
+                                    <input type="hidden" name="code" value="<?= htmlspecialchars($a['code']) ?>">
+                                    <button type="submit" style="padding:.3rem .65rem;border:1px solid var(--border);background:var(--off-white);color:var(--text-mid);border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer">Eliminar</button>
+                                </form>
                             </div>
                         </div>
                         <?php endforeach; ?>
@@ -1006,7 +1127,39 @@ $panel_date_label = date('j', $panel_ts) . ' de ' . strtolower($month_names_es[(
         <!-- ════ RIGHT COLUMN ════ -->
         <div class="admin-right">
 
-            <!-- Upcoming appointments -->
+            <!-- Pending appointments -->
+            <?php if ($pending_appts): ?>
+            <div class="card" style="border:1.5px solid #FDE68A">
+                <div class="card__head" style="background:#FFFBEB">
+                    <span class="card__title" style="color:#92400E">Pendientes de confirmar</span>
+                    <span class="badge-count" style="background:#D97706;color:#fff"><?= count($pending_appts) ?></span>
+                </div>
+                <div class="card__body">
+                    <?php foreach ($pending_appts as $a):
+                        $ts    = strtotime($a['date']);
+                        $label = date('j', $ts) . ' ' . $month_names_es[(int)date('n', $ts)] . ', ' . $a['time'];
+                        $mins  = max(0, (int)(($a['expires_at'] - time()) / 60));
+                    ?>
+                    <div class="upcoming-item">
+                        <span class="upcoming-dot" style="background:#D97706"></span>
+                        <div class="upcoming-info" style="flex:1">
+                            <p class="upcoming-who"><?= htmlspecialchars($a['name']) ?></p>
+                            <p class="upcoming-when"><?= htmlspecialchars($label) ?></p>
+                            <p class="upcoming-when" style="color:#D97706">Expira en ~<?= $mins ?> min</p>
+                        </div>
+                        <form method="POST" action="?month=<?= $view_month ?>&day=<?= $selected_day ?>" onsubmit="return confirm('¿Cancelar esta solicitud pendiente?')">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                            <input type="hidden" name="action" value="cancel_appointment">
+                            <input type="hidden" name="code" value="<?= htmlspecialchars($a['code']) ?>">
+                            <button type="submit" style="padding:.25rem .55rem;border:1px solid #FCA5A5;background:#FEF2F2;color:#DC2626;border-radius:5px;font-size:.72rem;font-weight:600;cursor:pointer">Cancelar</button>
+                        </form>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- Upcoming confirmed appointments -->
             <div class="card">
                 <div class="card__head">
                     <span class="card__title">Próximas citas</span>
@@ -1017,17 +1170,32 @@ $panel_date_label = date('j', $panel_ts) . ' de ' . strtolower($month_names_es[(
                 <div class="card__body">
                     <?php if ($confirmed_appts): ?>
                     <?php foreach ($confirmed_appts as $a):
-                        $ts = strtotime($a['date']);
-                        $label_day = $month_names_es[(int)date('n', $ts)];
-                        $label = date('j', $ts) . ' ' . $label_day . ', ' . $a['time'];
+                        $ts       = strtotime($a['date']);
+                        $label    = date('j', $ts) . ' ' . $month_names_es[(int)date('n', $ts)] . ', ' . $a['time'];
+                        $analysis = $a['lead_analysis'] ?? null;
+                        $score    = (int)($analysis['score'] ?? 0);
                     ?>
-                    <div class="upcoming-item">
+                    <div class="upcoming-item" style="flex-wrap:wrap;gap:.4rem">
                         <span class="upcoming-dot"></span>
-                        <div class="upcoming-info">
-                            <p class="upcoming-who"><?= htmlspecialchars($a['name']) ?></p>
+                        <div class="upcoming-info" style="flex:1;min-width:0">
+                            <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+                                <p class="upcoming-who"><?= htmlspecialchars($a['name']) ?></p>
+                                <?php if ($score > 0): ?>
+                                <span style="font-size:.7rem;background:<?= scoreBg($score) ?>;color:<?= scoreColor($score) ?>;padding:1px 7px;border-radius:10px;font-weight:700"><?= $score ?>/10</span>
+                                <?php endif; ?>
+                            </div>
                             <p class="upcoming-when"><?= htmlspecialchars($label) ?></p>
                             <p class="upcoming-when"><?= htmlspecialchars($a['email']) ?></p>
+                            <?php if ($analysis && !empty($analysis['label'])): ?>
+                            <p style="font-size:.72rem;color:<?= scoreColor($score) ?>;margin-top:2px"><?= htmlspecialchars($analysis['label']) ?></p>
+                            <?php endif; ?>
                         </div>
+                        <form method="POST" action="?month=<?= $view_month ?>&day=<?= urlencode($a['date']) ?>" onsubmit="return confirm('¿Cancelar esta cita?')">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                            <input type="hidden" name="action" value="cancel_appointment">
+                            <input type="hidden" name="code" value="<?= htmlspecialchars($a['code']) ?>">
+                            <button type="submit" style="padding:.25rem .55rem;border:1px solid #FCA5A5;background:#FEF2F2;color:#DC2626;border-radius:5px;font-size:.72rem;font-weight:600;cursor:pointer;align-self:flex-start">Cancelar</button>
+                        </form>
                     </div>
                     <?php endforeach; ?>
                     <?php else: ?>
@@ -1043,10 +1211,11 @@ $panel_date_label = date('j', $panel_ts) . ' de ' . strtolower($month_names_es[(
                 </div>
                 <div class="card__body" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
                     <?php
-                    $total_slots = count($slots_all);
+                    $total_slots  = count($slots_all);
                     $future_slots = array_filter($slots_all, fn($s) => substr($s, 0, 10) >= $today);
                     $total_appts  = count(array_filter($appointments_all, fn($a) => ($a['status'] ?? '') === 'confirmed'));
                     $future_appts = count(array_filter($appointments_all, fn($a) => ($a['status'] ?? '') === 'confirmed' && ($a['date'] ?? '') >= $today));
+                    $n_pending    = count($pending_appts);
                     ?>
                     <div style="text-align:center;padding:.75rem;background:var(--off-white);border-radius:var(--radius)">
                         <p style="font-size:1.6rem;font-weight:700;color:var(--gold)"><?= count($future_slots) ?></p>
@@ -1057,8 +1226,8 @@ $panel_date_label = date('j', $panel_ts) . ' de ' . strtolower($month_names_es[(
                         <p style="font-size:.75rem;color:var(--text-mid);margin-top:2px">Citas próximas</p>
                     </div>
                     <div style="text-align:center;padding:.75rem;background:var(--off-white);border-radius:var(--radius)">
-                        <p style="font-size:1.6rem;font-weight:700;color:var(--navy)"><?= $total_slots ?></p>
-                        <p style="font-size:.75rem;color:var(--text-mid);margin-top:2px">Slots totales</p>
+                        <p style="font-size:1.6rem;font-weight:700;color:#D97706"><?= $n_pending ?></p>
+                        <p style="font-size:.75rem;color:var(--text-mid);margin-top:2px">Pendientes</p>
                     </div>
                     <div style="text-align:center;padding:.75rem;background:var(--off-white);border-radius:var(--radius)">
                         <p style="font-size:1.6rem;font-weight:700;color:var(--navy)"><?= $total_appts ?></p>

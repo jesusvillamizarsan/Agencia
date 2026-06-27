@@ -28,10 +28,10 @@ if (empty($api_key) || $api_key === 'tu_api_key_aqui') {
 }
 
 // ── Appointment tag processor ────────────────────────────────
-function processAppointmentTags(string $reply): string {
+function processAppointmentTags(string $reply, array $history = [], string $api_key = ''): string {
     return preg_replace_callback(
         '/\[APPT:(\w+):(\{[^}]*\}|\S+)\]/i',
-        function (array $m) {
+        function (array $m) use ($history, $api_key) {
             $action = strtolower($m[1]);
             $raw    = $m[2];
             $params = json_decode($raw, true);
@@ -63,6 +63,13 @@ function processAppointmentTags(string $reply): string {
                         $slots = getAvailableSlots($date);
                         if (empty($slots)) return 'Lo siento, ese horario ya no está disponible y no quedan huecos para esa fecha. ¿Quieres que busquemos otra fecha?';
                         return 'Lo siento, ese horario acaba de ser ocupado. Los horarios disponibles ahora para el ' . formatDate($date) . ' son: **' . implode(', ', $slots) . '**. ¿Cuál prefieres?';
+                    }
+                    // Analyze lead sentiment in background (non-blocking best-effort)
+                    if (!empty($history) && !empty($api_key)) {
+                        $analysis = analyzeLeadSentiment($history, $api_key);
+                        if (!empty($analysis)) {
+                            storeLeadAnalysis($result['code'], $analysis);
+                        }
                     }
                     return '📧 ¡Casi listo! He reservado el hueco del **' . formatDate($result['date']) . ' a las ' . $result['time'] . '**. Te acabo de enviar un email — tienes **1 hora** para confirmar la cita haciendo clic en el enlace. Si no confirmas, el hueco quedará libre de nuevo. Tu código de reserva es **' . $result['code'] . '** — guárdalo para modificar o cancelar.';
                 }
@@ -401,8 +408,66 @@ if ($http_code !== 200 || empty($data['choices'][0]['message']['content'])) {
 
 $reply = $data['choices'][0]['message']['content'];
 
+// ── Lead sentiment analysis ──────────────────────────────────
+function analyzeLeadSentiment(array $history, string $api_key): array {
+    if (empty($history) || empty($api_key)) return [];
+
+    $conversation = '';
+    foreach ($history as $turn) {
+        $role    = $turn['role'] === 'assistant' ? 'Asistente' : 'Cliente';
+        $content = strip_tags(trim($turn['content'] ?? ''));
+        if ($content) $conversation .= "{$role}: {$content}\n";
+    }
+    if (empty(trim($conversation))) return [];
+
+    $prompt = <<<ANALYSIS
+Analiza esta conversación entre un asistente de ventas de una agencia de IA y un cliente potencial que acaba de reservar una consulta. Evalúa el nivel real de interés e intención de compra del cliente.
+
+CONVERSACIÓN:
+{$conversation}
+
+Responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta:
+{
+  "score": <número del 1 al 10>,
+  "label": "<uno de: Alto interés|Interés moderado|Solo explorando|Indeciso|Sin datos suficientes>",
+  "signals": [<array de strings con señales positivas, máximo 4>],
+  "alerts": [<array de strings con señales de alerta o fricciones, máximo 3>],
+  "summary": "<resumen ejecutivo de 2-3 frases sobre el cliente, su problema y potencial de cierre>"
+}
+ANALYSIS;
+
+    $payload = json_encode([
+        'model'       => 'gpt-4o-mini',
+        'messages'    => [['role' => 'user', 'content' => $prompt]],
+        'max_tokens'  => 400,
+        'temperature' => 0.3,
+        'response_format' => ['type' => 'json_object'],
+    ]);
+
+    $ch = curl_init('https://api.openai.com/v1/chat/completions');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_TIMEOUT        => 15,
+        CURLOPT_HTTPHEADER     => [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $api_key,
+        ],
+        CURLOPT_POSTFIELDS => $payload,
+    ]);
+    $res  = curl_exec($ch);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($code !== 200) return [];
+    $data = json_decode($res, true);
+    $raw  = $data['choices'][0]['message']['content'] ?? '';
+    $analysis = json_decode($raw, true);
+    return is_array($analysis) ? $analysis : [];
+}
+
 // ── Process appointment tags ─────────────────────────────────
-$reply = processAppointmentTags($reply);
+$reply = processAppointmentTags($reply, $history, $api_key);
 
 // ── Extract page actions from the reply ──────────────────────
 $allowed_actions = ['scroll_contact', 'scroll_services', 'scroll_pricing'];
