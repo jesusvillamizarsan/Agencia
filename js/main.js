@@ -739,6 +739,39 @@ function initChatbot() {
 }
 
 /* ─── Init ───────────────────────────────────────────────────── */
+function initCookieBanner() {
+  if (localStorage.getItem('jv_cookie_consent')) return;
+
+  const banner = document.createElement('div');
+  banner.id = 'cookie-banner';
+  banner.setAttribute('role', 'dialog');
+  banner.setAttribute('aria-label', 'Aviso de cookies');
+  banner.innerHTML = `
+    <div class="cookie-banner__inner">
+      <div class="cookie-banner__text">
+        <strong>🍪 Usamos cookies</strong>
+        <p>Utilizamos cookies técnicas para el funcionamiento del sitio y cookies analíticas para mejorar tu experiencia. Puedes aceptar todas o elegir solo las esenciales. <a href="/cookies" target="_blank">Más info</a></p>
+      </div>
+      <div class="cookie-banner__actions">
+        <button id="cookieReject" class="cookie-btn cookie-btn--outline">Solo esenciales</button>
+        <button id="cookieAccept" class="cookie-btn cookie-btn--gold">Aceptar todas</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(banner);
+
+  requestAnimationFrame(() => banner.classList.add('cookie-banner--visible'));
+
+  function setConsent(value) {
+    localStorage.setItem('jv_cookie_consent', value);
+    banner.classList.remove('cookie-banner--visible');
+    setTimeout(() => banner.remove(), 400);
+  }
+
+  document.getElementById('cookieAccept').addEventListener('click', () => setConsent('all'));
+  document.getElementById('cookieReject').addEventListener('click', () => setConsent('essential'));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   applyTranslations(currentLang);
   initLangToggle();
@@ -750,4 +783,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initActiveNav();
   setYear();
   initChatbot();
+  initCookieBanner();
 });
