@@ -498,7 +498,7 @@ function initContactForm() {
     try {
       const data = new FormData(form);
       data.append('lang', currentLang);
-      const res = await fetch('php/contact.php', { method: 'POST', body: data });
+      const res = await fetch('/php/contact.php', { method: 'POST', body: data });
       const json = await res.json();
       if (json.ok) {
         showMsg(msg, dict['form.success'], 'success');
@@ -667,7 +667,7 @@ function initChatbot() {
     showTyping();
 
     try {
-      const res = await fetch('php/chat.php', {
+      const res = await fetch('/php/chat.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text, history: history.slice(-8) }),
