@@ -182,6 +182,23 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" /></noscript>
   <link rel="preload" as="image" href="assets/logos/logo-horizontal-blanco.png" />
   <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Google Analytics — solo si el usuario aceptó cookies analíticas -->
+  <script>
+    (function() {
+      if (localStorage.getItem('jv_cookie_consent') === 'all') {
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-YV53NHGT2T';
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-YV53NHGT2T');
+      }
+    })();
+  </script>
 </head>
 <body>
 
