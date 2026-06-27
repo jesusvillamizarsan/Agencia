@@ -1088,6 +1088,7 @@ html[data-lang="en"] .lang-toggle__en { color: var(--gold); }
   .hero__visual { order: -1; overflow: hidden; }
   .hero__network { width: min(280px, 80vw); }
   .hero__orb { width: min(380px, 90vw); height: min(380px, 90vw); }
+  .hero__scroll-hint { display: none; }
 
   .process-steps::before { display: none; }
   .process-steps { grid-template-columns: 1fr; }
