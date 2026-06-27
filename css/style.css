@@ -1047,10 +1047,20 @@ html[data-lang="en"] .lang-toggle__en { color: var(--gold); }
 /* ─── RESPONSIVE ─────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .about { grid-template-columns: 1fr; gap: 3rem; }
-  .about__visual { justify-content: flex-start; }
+  .about__visual { justify-content: center; }
+  .about__content { text-align: center; }
+  .about__credentials { align-items: center; }
+
   .contact { grid-template-columns: 1fr; gap: 3rem; }
+  .contact__info { text-align: center; }
+  .contact__details { align-items: center; }
+
   .footer__inner { grid-template-columns: 1fr; gap: 2.5rem; }
   .footer__links { grid-template-columns: repeat(3, 1fr); }
+  .footer__brand { text-align: center; }
+  .footer__tagline { max-width: 100%; }
+  .footer__socials { justify-content: center; }
+  .footer__col { text-align: center; }
 }
 
 @media (max-width: 768px) {
@@ -1101,11 +1111,21 @@ html[data-lang="en"] .lang-toggle__en { color: var(--gold); }
   .footer__links { grid-template-columns: 1fr 1fr; }
   .footer__bottom .container { justify-content: center; text-align: center; }
 
-  .tech-strip .container { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .tech-strip .container { flex-direction: column; align-items: center; gap: 1rem; }
+  .tech-strip__logos { justify-content: center; }
+
+  .service-card { text-align: center; }
+  .service-card__icon { margin-inline: auto; }
+
+  .process-step { text-align: center; }
+
+  .why-card { text-align: center; }
+  .why-card__icon { margin-inline: auto; }
 }
 
 @media (max-width: 480px) {
   .hero__stats { flex-direction: column; align-items: center; gap: 1rem; }
+  .hero__stat { text-align: center; }
   .hero__stat-sep { width: 40px; height: 1px; }
   .footer__links { grid-template-columns: 1fr; }
   .contact__form-wrap { padding: 1.75rem 1.25rem; }
