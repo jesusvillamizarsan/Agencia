@@ -14,6 +14,7 @@
       <li><a href="/sobre-jesus/" class="nav__link">Sobre mí</a></li>
       <li><a href="/#proceso" class="nav__link">Proceso</a></li>
       <li><a href="/#precios" class="nav__link">Precios</a></li>
+      <li><a href="/blog/" class="nav__link">Blog</a></li>
       <li><a href="/contacto/" class="nav__link">Contacto</a></li>
     </ul>
 

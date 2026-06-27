@@ -206,7 +206,7 @@
 <!-- ═══════════════════════ HEADER ═══════════════════════ -->
 <header id="header">
   <nav class="nav container">
-    <a href="#hero" class="nav__logo">
+    <a href="/" class="nav__logo">
       <picture>
         <source srcset="assets/logos/logo-horizontal-blanco.webp" type="image/webp" />
         <img src="assets/logos/logo-horizontal-blanco.png" alt="Jesús Villamizar AI Agency · Agencia de Inteligencia Artificial en Madrid" class="nav__logo-img" fetchpriority="high" width="230" height="105" />
@@ -214,11 +214,12 @@
     </a>
 
     <ul class="nav__links" id="navLinks">
-      <li><a href="#servicios" class="nav__link" data-i18n="nav.services">Servicios</a></li>
-      <li><a href="#sobre-mi" class="nav__link" data-i18n="nav.about">Sobre mí</a></li>
+      <li><a href="/servicios/" class="nav__link" data-i18n="nav.services">Servicios</a></li>
+      <li><a href="/sobre-jesus/" class="nav__link" data-i18n="nav.about">Sobre mí</a></li>
       <li><a href="#proceso" class="nav__link" data-i18n="nav.process">Proceso</a></li>
       <li><a href="#precios" class="nav__link" data-i18n="nav.pricing">Precios</a></li>
-      <li><a href="#contacto" class="nav__link" data-i18n="nav.contact">Contacto</a></li>
+      <li><a href="/blog/" class="nav__link">Blog</a></li>
+      <li><a href="/contacto/" class="nav__link" data-i18n="nav.contact">Contacto</a></li>
     </ul>
 
     <div class="nav__actions">
@@ -227,7 +228,7 @@
         <span class="lang-toggle__sep">|</span>
         <span class="lang-toggle__en">EN</span>
       </button>
-      <a href="#contacto" class="btn btn--gold btn--sm nav__cta" data-i18n="nav.cta">Hablar con Jesús</a>
+      <a href="/contacto/" class="btn btn--gold btn--sm nav__cta" data-i18n="nav.cta">Hablar con Jesús</a>
       <button class="nav__burger" id="navBurger" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -355,37 +356,37 @@
       </h3>
       <div class="services-grid">
 
-        <div class="service-card">
+        <a href="/servicios/consultoria-estrategica-ia/" class="service-card" style="text-decoration:none;color:inherit;display:block;">
           <div class="service-card__icon">
             <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#C9A535" opacity="0.12"/><path d="M20 8l10 6v12l-10 6-10-6V14l10-6z" stroke="#C9A535" stroke-width="1.8" stroke-linejoin="round"/><circle cx="20" cy="20" r="3" fill="#C9A535"/></svg>
           </div>
           <h4 class="service-card__title" data-i18n="services.s1.title">Consultoría Estratégica IA</h4>
           <p class="service-card__desc" data-i18n="services.s1.desc">Evaluamos tu negocio y diseñamos un roadmap de adopción de IA realista, con ROI claro y priorización de casos de uso de alto impacto.</p>
-        </div>
+        </a>
 
-        <div class="service-card">
+        <a href="/servicios/chatbots-asistentes-virtuales/" class="service-card" style="text-decoration:none;color:inherit;display:block;">
           <div class="service-card__icon">
             <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#C9A535" opacity="0.12"/><path d="M12 28V16a2 2 0 012-2h4l2-4h4l2 4h4a2 2 0 012 2v12H12z" stroke="#C9A535" stroke-width="1.8" stroke-linejoin="round"/><circle cx="20" cy="22" r="3" stroke="#C9A535" stroke-width="1.8"/></svg>
           </div>
           <h4 class="service-card__title" data-i18n="services.s2.title">Chatbots y Asistentes Virtuales</h4>
           <p class="service-card__desc" data-i18n="services.s2.desc">Asistentes inteligentes que atienden a tus clientes 24/7, reducen costes de soporte y mejoran la experiencia de usuario en cualquier canal.</p>
-        </div>
+        </a>
 
-        <div class="service-card">
+        <a href="/servicios/automatizacion-procesos-ia/" class="service-card" style="text-decoration:none;color:inherit;display:block;">
           <div class="service-card__icon">
             <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#C9A535" opacity="0.12"/><path d="M8 20h4l4-8 4 16 4-8 4 8h4" stroke="#C9A535" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
           <h4 class="service-card__title" data-i18n="services.s3.title">Automatización de Procesos</h4>
           <p class="service-card__desc" data-i18n="services.s3.desc">Combinamos RPA con IA para automatizar flujos repetitivos, liberar a tu equipo de tareas manuales y eliminar errores operativos.</p>
-        </div>
+        </a>
 
-        <div class="service-card">
+        <a href="/servicios/integracion-apis-ia/" class="service-card" style="text-decoration:none;color:inherit;display:block;">
           <div class="service-card__icon">
             <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#C9A535" opacity="0.12"/><path d="M14 20h12M20 14v12" stroke="#C9A535" stroke-width="1.8" stroke-linecap="round"/><rect x="8" y="8" width="10" height="10" rx="3" stroke="#C9A535" stroke-width="1.8"/><rect x="22" y="22" width="10" height="10" rx="3" stroke="#C9A535" stroke-width="1.8"/></svg>
           </div>
           <h4 class="service-card__title" data-i18n="services.s4.title">Integración de APIs de IA</h4>
           <p class="service-card__desc" data-i18n="services.s4.desc">Conectamos modelos de lenguaje (GPT-4, Claude, Gemini) y otras APIs de IA a tus sistemas actuales de forma segura y escalable.</p>
-        </div>
+        </a>
 
       </div>
     </div>
@@ -396,37 +397,37 @@
       </h3>
       <div class="services-grid">
 
-        <div class="service-card service-card--dark">
+        <a href="/servicios/machine-learning/" class="service-card service-card--dark" style="text-decoration:none;color:inherit;display:block;">
           <div class="service-card__icon">
             <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#C9A535" opacity="0.2"/><ellipse cx="20" cy="20" rx="10" ry="6" stroke="#C9A535" stroke-width="1.8"/><ellipse cx="20" cy="20" rx="10" ry="6" stroke="#C9A535" stroke-width="1.8" transform="rotate(60 20 20)"/><ellipse cx="20" cy="20" rx="10" ry="6" stroke="#C9A535" stroke-width="1.8" transform="rotate(120 20 20)"/><circle cx="20" cy="20" r="2.5" fill="#C9A535"/></svg>
           </div>
           <h4 class="service-card__title" data-i18n="services.s5.title">Modelos ML Personalizados</h4>
           <p class="service-card__desc" data-i18n="services.s5.desc">Diseñamos y entrenamos modelos de Machine Learning a medida para tu sector — predicción de demanda, detección de fraude, scoring de clientes y más.</p>
-        </div>
+        </a>
 
-        <div class="service-card service-card--dark">
+        <a href="/servicios/deep-learning/" class="service-card service-card--dark" style="text-decoration:none;color:inherit;display:block;">
           <div class="service-card__icon">
             <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#C9A535" opacity="0.2"/><circle cx="12" cy="20" r="3" fill="#C9A535" opacity="0.7"/><circle cx="20" cy="12" r="3" fill="#C9A535" opacity="0.7"/><circle cx="28" cy="20" r="3" fill="#C9A535" opacity="0.7"/><circle cx="20" cy="28" r="3" fill="#C9A535" opacity="0.7"/><circle cx="20" cy="20" r="4" fill="#C9A535"/><line x1="15" y1="20" x2="17" y2="20" stroke="#C9A535" stroke-width="1.5"/><line x1="23" y1="20" x2="25" y2="20" stroke="#C9A535" stroke-width="1.5"/><line x1="20" y1="15" x2="20" y2="17" stroke="#C9A535" stroke-width="1.5"/><line x1="20" y1="23" x2="20" y2="25" stroke="#C9A535" stroke-width="1.5"/></svg>
           </div>
           <h4 class="service-card__title" data-i18n="services.s6.title">Deep Learning</h4>
           <p class="service-card__desc" data-i18n="services.s6.desc">Visión artificial, procesamiento de lenguaje natural (NLP) y redes neuronales profundas aplicadas a problemas de alta complejidad.</p>
-        </div>
+        </a>
 
-        <div class="service-card service-card--dark">
+        <a href="/servicios/agentes-ia-autonomos/" class="service-card service-card--dark" style="text-decoration:none;color:inherit;display:block;">
           <div class="service-card__icon">
             <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#C9A535" opacity="0.2"/><path d="M20 10c-5.5 0-10 4-10 10s4.5 10 10 10 10-4 10-10" stroke="#C9A535" stroke-width="1.8" stroke-linecap="round"/><path d="M26 10l4 4-4 4" stroke="#C9A535" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="3" fill="#C9A535" opacity="0.8"/></svg>
           </div>
           <h4 class="service-card__title" data-i18n="services.s7.title">Agentes IA Autónomos</h4>
           <p class="service-card__desc" data-i18n="services.s7.desc">Sistemas de IA que razonan, planifican y ejecutan tareas complejas de forma autónoma, integrándose con tus herramientas y datos internos.</p>
-        </div>
+        </a>
 
-        <div class="service-card service-card--dark">
+        <a href="/servicios/mlops/" class="service-card service-card--dark" style="text-decoration:none;color:inherit;display:block;">
           <div class="service-card__icon">
             <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#C9A535" opacity="0.2"/><rect x="8" y="14" width="10" height="12" rx="2" stroke="#C9A535" stroke-width="1.8"/><rect x="22" y="10" width="10" height="12" rx="2" stroke="#C9A535" stroke-width="1.8"/><path d="M18 20h4" stroke="#C9A535" stroke-width="1.8" stroke-linecap="round"/><path d="M13 26v4M27 22v8" stroke="#C9A535" stroke-width="1.8" stroke-linecap="round"/></svg>
           </div>
           <h4 class="service-card__title" data-i18n="services.s8.title">MLOps & Producción</h4>
           <p class="service-card__desc" data-i18n="services.s8.desc">Desplegamos, monitorizamos y escalamos modelos en producción con pipelines CI/CD para IA, garantizando estabilidad, velocidad y trazabilidad.</p>
-        </div>
+        </a>
 
       </div>
     </div>
@@ -457,6 +458,7 @@
       <p class="about__text" data-i18n="about.p2">
         Mi enfoque combina el rigor técnico del desarrollo de modelos con la comprensión real del negocio: no entrego solo código, entrego soluciones que generan valor medible y sostenible.
       </p>
+      <a href="/sobre-jesus/" class="btn btn--outline-light" style="display:inline-block;margin-bottom:1.5rem;" data-i18n="about.cta">Ver perfil completo →</a>
       <div class="about__credentials">
         <div class="credential">
           <svg class="credential__icon" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7l9 5 9-5-9-5zM3 12l9 5 9-5M3 17l9 5 9-5" stroke="#C9A535" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -764,18 +766,19 @@
     <div class="footer__links">
       <div class="footer__col">
         <h3 data-i18n="footer.services">Servicios</h3>
-        <a href="#servicios" data-i18n="footer.s1">Consultoría IA</a>
-        <a href="#servicios" data-i18n="footer.s2">Chatbots</a>
-        <a href="#servicios" data-i18n="footer.s3">Automatización</a>
-        <a href="#servicios" data-i18n="footer.s4">Deep Learning</a>
-        <a href="#servicios" data-i18n="footer.s5">Agentes IA</a>
+        <a href="/servicios/consultoria-estrategica-ia/" data-i18n="footer.s1">Consultoría IA</a>
+        <a href="/servicios/chatbots-asistentes-virtuales/" data-i18n="footer.s2">Chatbots</a>
+        <a href="/servicios/automatizacion-procesos-ia/" data-i18n="footer.s3">Automatización</a>
+        <a href="/servicios/deep-learning/" data-i18n="footer.s4">Deep Learning</a>
+        <a href="/servicios/agentes-ia-autonomos/" data-i18n="footer.s5">Agentes IA</a>
       </div>
       <div class="footer__col">
         <h3 data-i18n="footer.company">Empresa</h3>
-        <a href="#sobre-mi" data-i18n="footer.about">Sobre Jesús</a>
+        <a href="/sobre-jesus/" data-i18n="footer.about">Sobre Jesús</a>
+        <a href="/blog/">Blog</a>
         <a href="#proceso" data-i18n="footer.process">Proceso</a>
         <a href="#precios" data-i18n="footer.pricing">Precios</a>
-        <a href="#contacto" data-i18n="footer.contact">Contacto</a>
+        <a href="/contacto/" data-i18n="footer.contact">Contacto</a>
       </div>
       <div class="footer__col">
         <h3 data-i18n="footer.legal">Legal</h3>

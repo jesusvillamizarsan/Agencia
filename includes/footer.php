@@ -28,6 +28,7 @@
       <div class="footer__col">
         <h3>Empresa</h3>
         <a href="/sobre-jesus/">Sobre Jesús</a>
+        <a href="/blog/">Blog</a>
         <a href="/#proceso">Proceso</a>
         <a href="/#precios">Precios</a>
         <a href="/contacto/">Contacto</a>
