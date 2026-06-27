@@ -495,28 +495,28 @@
       <div class="process-step reveal">
         <div class="process-step__num">01</div>
         <div class="process-step__body">
-          <h4 data-i18n="process.s1.title">Diagnóstico y Descubrimiento</h4>
+          <h3 data-i18n="process.s1.title">Diagnóstico y Descubrimiento</h3>
           <p data-i18n="process.s1.desc">Analizamos tu negocio, tus datos y tus objetivos. Identificamos los casos de uso con mayor impacto y menor fricción para empezar a generar valor rápido.</p>
         </div>
       </div>
       <div class="process-step reveal">
         <div class="process-step__num">02</div>
         <div class="process-step__body">
-          <h4 data-i18n="process.s2.title">Diseño de Solución</h4>
+          <h3 data-i18n="process.s2.title">Diseño de Solución</h3>
           <p data-i18n="process.s2.desc">Proponemos la arquitectura técnica y el plan de proyecto con hitos claros, presupuesto detallado y métricas de éxito acordadas desde el inicio.</p>
         </div>
       </div>
       <div class="process-step reveal">
         <div class="process-step__num">03</div>
         <div class="process-step__body">
-          <h4 data-i18n="process.s3.title">Desarrollo e Iteración</h4>
+          <h3 data-i18n="process.s3.title">Desarrollo e Iteración</h3>
           <p data-i18n="process.s3.desc">Construimos la solución en sprints cortos con demos semanales. Tú tienes visibilidad total del progreso y retroalimentación en cada etapa.</p>
         </div>
       </div>
       <div class="process-step reveal">
         <div class="process-step__num">04</div>
         <div class="process-step__body">
-          <h4 data-i18n="process.s4.title">Despliegue y Soporte</h4>
+          <h3 data-i18n="process.s4.title">Despliegue y Soporte</h3>
           <p data-i18n="process.s4.desc">Llevamos la solución a producción, formamos a tu equipo y ofrecemos soporte continuo para asegurar que el sistema mejora con el tiempo.</p>
         </div>
       </div>
@@ -534,32 +534,32 @@
     <div class="why-grid">
       <div class="why-card reveal">
         <svg class="why-card__icon" viewBox="0 0 32 32" fill="none"><path d="M16 4l3 9h9l-7 5 3 9-8-6-8 6 3-9-7-5h9l3-9z" stroke="#C9A535" stroke-width="1.8" stroke-linejoin="round"/></svg>
-        <h4 data-i18n="why.w1.title">Formación Académica de Alto Nivel</h4>
+        <h3 data-i18n="why.w1.title">Formación Académica de Alto Nivel</h3>
         <p data-i18n="why.w1.desc">Máster en Machine Learning y Deep Learning. Conocimiento teórico sólido aplicado a problemas reales de negocio.</p>
       </div>
       <div class="why-card reveal">
         <svg class="why-card__icon" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="12" stroke="#C9A535" stroke-width="1.8"/><path d="M11 16l4 4 6-8" stroke="#C9A535" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <h4 data-i18n="why.w2.title">Resultados Medibles</h4>
+        <h3 data-i18n="why.w2.title">Resultados Medibles</h3>
         <p data-i18n="why.w2.desc">Cada proyecto incluye KPIs claros. No trabajamos por horas sin rumbo: nos comprometemos con resultados concretos y verificables.</p>
       </div>
       <div class="why-card reveal">
         <svg class="why-card__icon" viewBox="0 0 32 32" fill="none"><path d="M4 16h6l4-10 4 20 4-10 2 6 4-6h4" stroke="#C9A535" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <h4 data-i18n="why.w3.title">Enfoque End-to-End</h4>
+        <h3 data-i18n="why.w3.title">Enfoque End-to-End</h3>
         <p data-i18n="why.w3.desc">Desde la estrategia hasta el despliegue en producción. Un solo interlocutor técnico con visión completa del proyecto.</p>
       </div>
       <div class="why-card reveal">
         <svg class="why-card__icon" viewBox="0 0 32 32" fill="none"><path d="M16 4v6M16 22v6M4 16h6M22 16h6" stroke="#C9A535" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="16" r="6" stroke="#C9A535" stroke-width="1.8"/></svg>
-        <h4 data-i18n="why.w4.title">Tecnología Agnóstica</h4>
+        <h3 data-i18n="why.w4.title">Tecnología Agnóstica</h3>
         <p data-i18n="why.w4.desc">Elegimos la mejor herramienta para cada problema: OpenAI, Claude, modelos open source, TensorFlow o PyTorch. Sin sesgos de vendor.</p>
       </div>
       <div class="why-card reveal">
         <svg class="why-card__icon" viewBox="0 0 32 32" fill="none"><path d="M8 12h16M8 16h10M8 20h12" stroke="#C9A535" stroke-width="1.8" stroke-linecap="round"/><rect x="4" y="6" width="24" height="20" rx="3" stroke="#C9A535" stroke-width="1.8"/></svg>
-        <h4 data-i18n="why.w5.title">Comunicación Transparente</h4>
+        <h3 data-i18n="why.w5.title">Comunicación Transparente</h3>
         <p data-i18n="why.w5.desc">Reportes semanales, acceso al código en todo momento y reuniones regulares. Tú nunca pierdes el control de tu proyecto.</p>
       </div>
       <div class="why-card reveal">
         <svg class="why-card__icon" viewBox="0 0 32 32" fill="none"><path d="M16 4c6.6 0 12 5.4 12 12" stroke="#C9A535" stroke-width="1.8" stroke-linecap="round"/><path d="M28 16a12 12 0 11-24 0 12 12 0 0124 0z" stroke="#C9A535" stroke-width="1.8" opacity="0.3"/><path d="M16 10v6l4 2" stroke="#C9A535" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <h4 data-i18n="why.w6.title">Velocidad sin Sacrificar Calidad</h4>
+        <h3 data-i18n="why.w6.title">Velocidad sin Sacrificar Calidad</h3>
         <p data-i18n="why.w6.desc">Metodología ágil con entregas rápidas. Los primeros resultados visibles en las primeras semanas del proyecto.</p>
       </div>
     </div>

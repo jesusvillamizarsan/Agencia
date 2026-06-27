@@ -617,7 +617,7 @@ html[data-lang="en"] .lang-toggle__en { color: var(--gold); }
   margin-bottom: 1.25rem;
 }
 
-.process-step__body h4 {
+.process-step__body h3 {
   color: var(--navy);
   margin-bottom: .5rem;
   font-size: 1.1rem;
@@ -651,7 +651,7 @@ html[data-lang="en"] .lang-toggle__en { color: var(--gold); }
   height: 36px;
   margin-bottom: 1rem;
 }
-.why-card h4 {
+.why-card h3 {
   color: var(--navy);
   margin-bottom: .5rem;
   font-size: 1.05rem;
