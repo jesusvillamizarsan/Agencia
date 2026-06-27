@@ -358,7 +358,7 @@ function applyTranslations(lang) {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (dict[key] !== undefined) {
-      el.innerHTML = dict[key];
+      el.textContent = dict[key];
     }
   });
 
@@ -788,7 +788,7 @@ function initCookieBanner() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  applyTranslations(currentLang);
+  requestAnimationFrame(() => applyTranslations(currentLang));
   initLangToggle();
   initHeader();
   initMobileMenu();

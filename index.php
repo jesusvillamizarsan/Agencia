@@ -180,7 +180,7 @@
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" as="style" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" /></noscript>
-  <link rel="preload" as="image" href="assets/logos/logo-horizontal-blanco.png" />
+  <link rel="preload" as="image" href="assets/logos/logo-horizontal-blanco.webp" type="image/webp" />
   <link rel="stylesheet" href="css/style.css" />
 
   <!-- Google Analytics — solo si el usuario aceptó cookies analíticas -->
@@ -206,7 +206,10 @@
 <header id="header">
   <nav class="nav container">
     <a href="#hero" class="nav__logo">
-      <img src="assets/logos/logo-horizontal-blanco.png" alt="Jesús Villamizar AI Agency · Agencia de Inteligencia Artificial en Madrid" class="nav__logo-img" fetchpriority="high" />
+      <picture>
+        <source srcset="assets/logos/logo-horizontal-blanco.webp" type="image/webp" />
+        <img src="assets/logos/logo-horizontal-blanco.png" alt="Jesús Villamizar AI Agency · Agencia de Inteligencia Artificial en Madrid" class="nav__logo-img" fetchpriority="high" width="230" height="105" />
+      </picture>
     </a>
 
     <ul class="nav__links" id="navLinks">
@@ -742,7 +745,10 @@
 <footer class="footer">
   <div class="container footer__inner">
     <div class="footer__brand">
-      <img src="assets/logos/logo-horizontal-blanco.png" alt="Jesús Villamizar AI Agency" class="footer__logo" loading="lazy" />
+      <picture>
+        <source srcset="assets/logos/logo-horizontal-blanco.webp" type="image/webp" />
+        <img src="assets/logos/logo-horizontal-blanco.png" alt="Jesús Villamizar AI Agency" class="footer__logo" loading="lazy" width="230" height="105" />
+      </picture>
       <p class="footer__tagline" data-i18n="footer.tagline">Inteligencia Artificial a medida para empresas con ambición.</p>
       <div class="footer__socials">
         <a href="https://www.linkedin.com/in/villamizarsan/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
@@ -756,7 +762,7 @@
 
     <div class="footer__links">
       <div class="footer__col">
-        <h5 data-i18n="footer.services">Servicios</h5>
+        <h3 data-i18n="footer.services">Servicios</h3>
         <a href="#servicios" data-i18n="footer.s1">Consultoría IA</a>
         <a href="#servicios" data-i18n="footer.s2">Chatbots</a>
         <a href="#servicios" data-i18n="footer.s3">Automatización</a>
@@ -764,14 +770,14 @@
         <a href="#servicios" data-i18n="footer.s5">Agentes IA</a>
       </div>
       <div class="footer__col">
-        <h5 data-i18n="footer.company">Empresa</h5>
+        <h3 data-i18n="footer.company">Empresa</h3>
         <a href="#sobre-mi" data-i18n="footer.about">Sobre Jesús</a>
         <a href="#proceso" data-i18n="footer.process">Proceso</a>
         <a href="#precios" data-i18n="footer.pricing">Precios</a>
         <a href="#contacto" data-i18n="footer.contact">Contacto</a>
       </div>
       <div class="footer__col">
-        <h5 data-i18n="footer.legal">Legal</h5>
+        <h3 data-i18n="footer.legal">Legal</h3>
         <a href="/privacidad" data-i18n="footer.privacy">Política de Privacidad</a>
         <a href="/aviso-legal" data-i18n="footer.legalNotice">Aviso Legal</a>
         <a href="/cookies" data-i18n="footer.cookies">Política de Cookies</a>

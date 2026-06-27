@@ -399,7 +399,7 @@ html[data-lang="en"] .lang-toggle__en { color: var(--gold); }
   flex-wrap: wrap;
 }
 .tech-strip__label {
-  color: rgba(255,255,255,.4);
+  color: rgba(255,255,255,.7);
   font-size: .75rem;
   font-weight: 600;
   letter-spacing: .1em;
@@ -1015,7 +1015,7 @@ html[data-lang="en"] .lang-toggle__en { color: var(--gold); }
 }
 
 .footer__col { display: flex; flex-direction: column; gap: .6rem; }
-.footer__col h5 {
+.footer__col h3 {
   font-family: var(--font-sans);
   font-size: .75rem;
   font-weight: 700;
