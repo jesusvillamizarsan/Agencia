@@ -357,8 +357,13 @@ function applyTranslations(lang) {
   // text nodes
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if (dict[key] !== undefined) {
-      el.textContent = dict[key];
+    const val = dict[key];
+    if (val !== undefined) {
+      if (val.includes('<')) {
+        el.innerHTML = val;
+      } else {
+        el.textContent = val;
+      }
     }
   });
 

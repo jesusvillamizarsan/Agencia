@@ -35,7 +35,7 @@
   --section-py: 100px;
 }
 
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 16px; overflow-x: hidden; }
 
 body {
   font-family: var(--font-sans);
@@ -1085,8 +1085,9 @@ html[data-lang="en"] .lang-toggle__en { color: var(--gold); }
   .hero__subtitle { max-width: 100%; }
   .hero__ctas { justify-content: center; }
   .hero__stats { justify-content: center; }
-  .hero__visual { order: -1; }
+  .hero__visual { order: -1; overflow: hidden; }
   .hero__network { width: min(280px, 80vw); }
+  .hero__orb { width: min(380px, 90vw); height: min(380px, 90vw); }
 
   .process-steps::before { display: none; }
   .process-steps { grid-template-columns: 1fr; }
