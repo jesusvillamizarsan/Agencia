@@ -2,7 +2,14 @@
 // ── Session Guard ─────────────────────────────────────────────
 ini_set('session.cookie_httponly', 1);
 ini_set('session.cookie_samesite', 'Strict');
+ini_set('session.cookie_secure', 1);
 session_start();
+
+require_once __DIR__ . '/auth.php';
+check_admin_ip();
+header('X-Robots-Tag: noindex, nofollow');
+check_session_timeout();
+
 if (!isset($_SESSION['admin_auth']) || $_SESSION['admin_auth'] !== true) {
     header('Location: index.php');
     exit;
@@ -94,34 +101,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $code = strtoupper(trim($_POST['code'] ?? ''));
         $appt_data = read_json(APPT_FILE);
         $found = false;
+        $was_confirmed = false;
         foreach ($appt_data['appointments'] as &$a) {
             if ($a['code'] === $code && in_array($a['status'] ?? '', ['confirmed', 'pending'])) {
+                $was_confirmed = ($a['status'] === 'confirmed');
                 $a['status']       = 'cancelled';
                 $a['cancelled_at'] = date('c');
                 $found = true;
-                // Send cancellation email if was confirmed
-                if ($a['status'] !== 'pending') {
+                if ($was_confirmed) {
                     require_once __DIR__ . '/../php/appointments.php';
                     sendCancellationEmail($a);
                 }
+                log_admin_action('cancel_appointment', ['code' => $code, 'client' => $a['name'] ?? '']);
                 break;
             }
         }
         write_json(APPT_FILE, $appt_data);
+        session_regenerate_id(true);
         if (is_json_request()) json_response(['ok' => $found]);
         $_SESSION['flash'] = ['msg' => $found ? 'Cita cancelada.' : 'Cita no encontrada.', 'type' => $found ? 'success' : 'error'];
         header("Location: agenda.php?month={$view_month}&day={$selected_day}");
         exit;
 
     } elseif ($action === 'delete_appointment') {
-        $code = strtoupper(trim($_POST['code'] ?? ''));
+        $code     = strtoupper(trim($_POST['code'] ?? ''));
+        $password = trim($_POST['confirm_password'] ?? '');
+
+        if (!verify_admin_password($password)) {
+            if (is_json_request()) json_response(['ok' => false, 'error' => 'Contraseña incorrecta'], 403);
+            $_SESSION['flash'] = ['msg' => 'Contraseña incorrecta. Eliminación cancelada.', 'type' => 'error'];
+            header("Location: agenda.php?month={$view_month}&day={$selected_day}");
+            exit;
+        }
+
         $appt_data = read_json(APPT_FILE);
+        $deleted_appt = null;
+        foreach ($appt_data['appointments'] as $a) {
+            if ($a['code'] === $code) { $deleted_appt = $a; break; }
+        }
         $before = count($appt_data['appointments'] ?? []);
         $appt_data['appointments'] = array_values(array_filter($appt_data['appointments'] ?? [], fn($a) => $a['code'] !== $code));
         $deleted = count($appt_data['appointments']) < $before;
         write_json(APPT_FILE, $appt_data);
+
+        if ($deleted && $deleted_appt) {
+            log_admin_action('delete_appointment', ['code' => $code, 'client' => $deleted_appt['name'] ?? '']);
+        }
+        session_regenerate_id(true);
         if (is_json_request()) json_response(['ok' => $deleted]);
-        $_SESSION['flash'] = ['msg' => $deleted ? 'Cita eliminada.' : 'Cita no encontrada.', 'type' => $deleted ? 'success' : 'error'];
+        $_SESSION['flash'] = ['msg' => $deleted ? 'Cita eliminada permanentemente.' : 'Cita no encontrada.', 'type' => $deleted ? 'success' : 'error'];
         header("Location: agenda.php?month={$view_month}&day={$selected_day}");
         exit;
 
@@ -1107,10 +1135,16 @@ $panel_date_label = date('j', $panel_ts) . ' de ' . strtolower($month_names_es[(
                                     <input type="hidden" name="code" value="<?= htmlspecialchars($a['code']) ?>">
                                     <button type="submit" style="padding:.3rem .65rem;border:1px solid #FCA5A5;background:#FEF2F2;color:#DC2626;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer">Cancelar</button>
                                 </form>
-                                <form method="POST" action="?month=<?= $view_month ?>&day=<?= $selected_day ?>" onsubmit="return confirm('¿Eliminar permanentemente esta cita del registro?')">
+                                <form method="POST" action="?month=<?= $view_month ?>&day=<?= $selected_day ?>" onsubmit="
+                                    var pwd = prompt('Confirma tu contraseña de administrador para eliminar:');
+                                    if (!pwd) return false;
+                                    this.querySelector('[name=confirm_password]').value = pwd;
+                                    return true;
+                                ">
                                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                                     <input type="hidden" name="action" value="delete_appointment">
                                     <input type="hidden" name="code" value="<?= htmlspecialchars($a['code']) ?>">
+                                    <input type="hidden" name="confirm_password" value="">
                                     <button type="submit" style="padding:.3rem .65rem;border:1px solid var(--border);background:var(--off-white);color:var(--text-mid);border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer">Eliminar</button>
                                 </form>
                             </div>

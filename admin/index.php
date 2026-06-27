@@ -5,6 +5,10 @@ ini_set('session.cookie_samesite', 'Strict');
 ini_set('session.cookie_secure', 1);
 session_start();
 
+require_once __DIR__ . '/auth.php';
+check_admin_ip();
+header('X-Robots-Tag: noindex, nofollow');
+
 if (isset($_SESSION['admin_auth']) && $_SESSION['admin_auth'] === true) {
     header('Location: agenda.php');
     exit;
@@ -22,6 +26,8 @@ if (file_exists($env_file)) {
 
 $admin_password = $_ENV['ADMIN_PASSWORD'] ?? '';
 $error = '';
+$info  = '';
+if (isset($_GET['timeout'])) $info = 'Sesión cerrada por inactividad. Vuelve a iniciar sesión.';
 
 // ── Brute-force throttle (5 attempts → 15 min lockout) ───────
 $attempts  = $_SESSION['login_attempts'] ?? 0;
@@ -45,7 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($error)) {
     if (!empty($admin_password) && hash_equals($admin_password, $input)) {
         $_SESSION['admin_auth']     = true;
         $_SESSION['login_attempts'] = 0;
+        $_SESSION['last_activity']  = time();
         session_regenerate_id(true);
+        log_admin_action('login');
         header('Location: agenda.php');
         exit;
     } else {
@@ -244,6 +252,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($error)) {
     <h1 class="login-title">Panel de Agenda</h1>
     <p class="login-subtitle">Acceso exclusivo · Jesús Villamizar AI Agency</p>
 
+    <?php if ($info): ?>
+    <div class="error-msg" style="background:#EFF6FF;color:#1E40AF;border-color:#BFDBFE">
+        <span class="error-icon" style="background:#2563EB">i</span>
+        <?= htmlspecialchars($info) ?>
+    </div>
+    <?php endif; ?>
     <?php if ($error): ?>
     <div class="error-msg">
         <span class="error-icon">!</span>
