@@ -64,7 +64,7 @@ function processAppointmentTags(string $reply): string {
                         if (empty($slots)) return 'Lo siento, ese horario ya no está disponible y no quedan huecos para esa fecha. ¿Quieres que busquemos otra fecha?';
                         return 'Lo siento, ese horario acaba de ser ocupado. Los horarios disponibles ahora para el ' . formatDate($date) . ' son: **' . implode(', ', $slots) . '**. ¿Cuál prefieres?';
                     }
-                    return '✅ ¡Reserva confirmada! Tu consulta es el **' . formatDate($result['date']) . ' a las ' . $result['time'] . '** (30 min, videollamada). Tu código de reserva es **' . $result['code'] . '** — guárdalo para modificar o cancelar. Te hemos enviado un email de confirmación.';
+                    return '📧 ¡Casi listo! He reservado el hueco del **' . formatDate($result['date']) . ' a las ' . $result['time'] . '**. Te acabo de enviar un email — tienes **1 hora** para confirmar la cita haciendo clic en el enlace. Si no confirmas, el hueco quedará libre de nuevo. Tu código de reserva es **' . $result['code'] . '** — guárdalo para modificar o cancelar.';
                 }
 
                 case 'get': {

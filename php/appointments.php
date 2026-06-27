@@ -10,6 +10,8 @@ define('APPOINTMENTS_FILE', DATA_DIR . 'appointments.json');
 define('SLOT_DURATION',    30); // minutes
 define('NOTIFY_EMAIL',     'jesusvillamizargo@gmail.com');
 define('SITE_NAME',        'Jesús Villamizar AI Agency');
+define('SITE_URL',         'https://jesusvillamizar.com');
+define('CONFIRM_TTL',      3600); // 1 hour in seconds
 
 // ── Load .env ──────────────────────────────────────────────
 function loadEnv() {
@@ -53,19 +55,33 @@ function generateCode(): string {
     return $code;
 }
 
+function generateToken(): string {
+    return bin2hex(random_bytes(16)); // 32-char hex token
+}
+
+// Returns slots that are truly blocked: confirmed, or pending and not yet expired
+function getBlockedSlots(array $appointments): array {
+    $now = time();
+    return array_map(
+        fn($a) => $a['date'] . ' ' . $a['time'],
+        array_filter($appointments, function ($a) use ($now) {
+            if ($a['status'] === 'confirmed') return true;
+            if ($a['status'] === 'pending' && ($a['expires_at'] ?? 0) > $now) return true;
+            return false;
+        })
+    );
+}
+
 // ── Get available slots for a date ────────────────────────
 function getAvailableSlots(string $date): array {
     $avail = readJson(AVAILABILITY_FILE);
     $appts = readJson(APPOINTMENTS_FILE);
 
-    $allSlots = $avail['slots'] ?? [];
-    $bookedSlots = array_map(
-        fn($a) => $a['date'] . ' ' . $a['time'],
-        array_filter($appts['appointments'] ?? [], fn($a) => $a['status'] === 'confirmed')
-    );
+    $allSlots    = $avail['slots'] ?? [];
+    $blockedSlots = getBlockedSlots($appts['appointments'] ?? []);
 
     $daySlots = array_filter($allSlots, fn($s) => str_starts_with($s, $date));
-    $free = array_values(array_filter($daySlots, fn($s) => !in_array($s, $bookedSlots)));
+    $free = array_values(array_filter($daySlots, fn($s) => !in_array($s, $blockedSlots)));
     sort($free);
 
     return array_map(fn($s) => substr($s, 11), $free); // return only HH:MM
@@ -76,18 +92,15 @@ function getNextAvailableDates(int $limit = 5): array {
     $avail = readJson(AVAILABILITY_FILE);
     $appts = readJson(APPOINTMENTS_FILE);
 
-    $allSlots = $avail['slots'] ?? [];
-    $bookedSlots = array_map(
-        fn($a) => $a['date'] . ' ' . $a['time'],
-        array_filter($appts['appointments'] ?? [], fn($a) => $a['status'] === 'confirmed')
-    );
+    $allSlots     = $avail['slots'] ?? [];
+    $blockedSlots = getBlockedSlots($appts['appointments'] ?? []);
 
-    $today  = date('Y-m-d');
-    $dates  = [];
+    $today = date('Y-m-d');
+    $dates = [];
     foreach ($allSlots as $slot) {
         $date = substr($slot, 0, 10);
         if ($date < $today) continue;
-        if (in_array($slot, $bookedSlots)) continue;
+        if (in_array($slot, $blockedSlots)) continue;
         $dates[$date] = true;
         if (count($dates) >= $limit) break;
     }
@@ -103,28 +116,61 @@ function bookAppointment(string $name, string $email, string $phone, string $dat
 
     $data  = readJson(APPOINTMENTS_FILE);
     $code  = generateCode();
-    // ensure unique code
     $codes = array_column($data['appointments'] ?? [], 'code');
     while (in_array($code, $codes)) $code = generateCode();
 
     $appointment = [
-        'code'       => $code,
-        'name'       => $name,
-        'email'      => $email,
-        'phone'      => $phone,
-        'date'       => $date,
-        'time'       => $time,
-        'status'     => 'confirmed',
-        'created_at' => date('c'),
+        'code'        => $code,
+        'name'        => $name,
+        'email'       => $email,
+        'phone'       => $phone,
+        'date'        => $date,
+        'time'        => $time,
+        'status'      => 'pending',
+        'confirm_token' => generateToken(),
+        'expires_at'  => time() + CONFIRM_TTL,
+        'created_at'  => date('c'),
     ];
 
     $data['appointments'][] = $appointment;
     writeJson(APPOINTMENTS_FILE, $data);
 
-    sendConfirmationEmail($appointment);
-    sendNotificationEmail('nueva', $appointment);
+    sendPendingEmail($appointment);
 
     return ['ok' => true, 'code' => $code, 'date' => $date, 'time' => $time];
+}
+
+// ── Confirm appointment by token ───────────────────────────
+function confirmAppointment(string $token): array {
+    $data = readJson(APPOINTMENTS_FILE);
+    foreach ($data['appointments'] as &$a) {
+        if (($a['confirm_token'] ?? '') !== $token) continue;
+
+        if ($a['status'] === 'confirmed') {
+            return ['ok' => false, 'error' => 'already_confirmed', 'appointment' => $a];
+        }
+        if ($a['status'] === 'cancelled') {
+            return ['ok' => false, 'error' => 'cancelled'];
+        }
+        if (time() > ($a['expires_at'] ?? 0)) {
+            if (empty($a['expiry_notified'])) {
+                $a['expiry_notified'] = true;
+                writeJson(APPOINTMENTS_FILE, $data);
+                sendExpiredEmail($a);
+            }
+            return ['ok' => false, 'error' => 'expired', 'appointment' => $a];
+        }
+
+        $a['status']       = 'confirmed';
+        $a['confirmed_at'] = date('c');
+        writeJson(APPOINTMENTS_FILE, $data);
+
+        sendConfirmedEmail($a);
+        sendNotificationEmail('nueva', $a);
+
+        return ['ok' => true, 'appointment' => $a];
+    }
+    return ['ok' => false, 'error' => 'not_found'];
 }
 
 // ── Get appointment ────────────────────────────────────────
@@ -190,12 +236,47 @@ function formatDate(string $date): string {
     return (int)$d . ' de ' . $months[(int)$m - 1] . ' de ' . $y;
 }
 
-function sendEmail(string $to, string $subject, string $body): void {
-    $headers  = "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-    $headers .= "From: " . SITE_NAME . " <noreply@jesusvillamizar.com>\r\n";
+function sendEmail(string $to, string $subject, string $htmlBody): bool {
+    loadEnv();
+    $host = $_ENV['SMTP_HOST'] ?? 'smtp.hostinger.com';
+    $port = (int)($_ENV['SMTP_PORT'] ?? 465);
+    $user = $_ENV['SMTP_USER'] ?? '';
+    $pass = $_ENV['SMTP_PASS'] ?? '';
+
+    if (!$user || !$pass) return false;
+
+    $socket = @stream_socket_client("ssl://{$host}:{$port}", $errno, $errstr, 10);
+    if (!$socket) return false;
+
+    $read = fn() => fgets($socket, 512);
+    $send = fn($cmd) => fputs($socket, $cmd . "\r\n");
+
+    $read();
+    $send("EHLO jesusvillamizar.com");
+    while ($line = $read()) { if (substr($line, 3, 1) === ' ') break; }
+
+    $send("AUTH LOGIN");  $read();
+    $send(base64_encode($user)); $read();
+    $send(base64_encode($pass));
+    $resp = $read();
+    if (substr(trim($resp), 0, 3) !== '235') { fclose($socket); return false; }
+
+    $send("MAIL FROM:<{$user}>"); $read();
+    $send("RCPT TO:<{$to}>"); $read();
+    $send("DATA"); $read();
+
+    $headers  = "From: " . SITE_NAME . " <{$user}>\r\n";
     $headers .= "Reply-To: hello@jesusvillamizar.com\r\n";
-    @mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $body, $headers);
+    $headers .= "To: {$to}\r\n";
+    $headers .= "Subject: =?UTF-8?B?" . base64_encode($subject) . "?=\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $send($headers . "\r\n" . $htmlBody . "\r\n.");
+    $resp = $read();
+
+    $send("QUIT");
+    fclose($socket);
+    return substr(trim($resp), 0, 3) === '250';
 }
 
 function emailWrap(string $content): string {
@@ -211,6 +292,7 @@ function emailWrap(string $content): string {
   .detail{background:#f8f8f8;border-left:4px solid #c9a84c;padding:14px 18px;margin:18px 0;border-radius:0 6px 6px 0}
   .detail p{margin:4px 0}
   .code{font-size:22px;font-weight:bold;color:#0a1628;letter-spacing:3px}
+  .btn{display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:14px 28px;border-radius:6px;font-weight:bold;font-size:16px;margin:16px 0}
   .footer{padding:16px 32px;background:#f0f0f0;font-size:12px;color:#777;text-align:center}
 </style></head>
 <body><div class="box">
@@ -221,15 +303,34 @@ function emailWrap(string $content): string {
 HTML;
 }
 
-function sendConfirmationEmail(array $a): void {
-    $dateStr = formatDate($a['date']);
+function sendPendingEmail(array $a): void {
+    $dateStr     = formatDate($a['date']);
+    $confirmUrl  = SITE_URL . '/php/confirm.php?token=' . $a['confirm_token'];
+    $expiresIn   = '1 hora';
     $body = emailWrap("
         <p>Hola <strong>{$a['name']}</strong>,</p>
-        <p>Tu consulta ha quedado confirmada. Aquí tienes los detalles:</p>
+        <p>Has solicitado una consulta. Para confirmar tu reserva haz clic en el botón de abajo:</p>
         <div class='detail'>
             <p><strong>Fecha:</strong> $dateStr</p>
             <p><strong>Hora:</strong> {$a['time']} (Madrid, hora española)</p>
-            <p><strong>Duración:</strong> 30 minutos</p>
+            <p><strong>Duración:</strong> 30 minutos · Videollamada</p>
+        </div>
+        <p><a href='$confirmUrl' class='btn'>Confirmar mi cita</a></p>
+        <p style='color:#999;font-size:13px'>Este enlace caduca en $expiresIn. Si no confirmas, el hueco quedará libre de nuevo.</p>
+        <p>Si no has solicitado esta cita, ignora este email.</p>
+    ");
+    sendEmail($a['email'], 'Confirma tu consulta — ' . $dateStr . ' a las ' . $a['time'], $body);
+}
+
+function sendConfirmedEmail(array $a): void {
+    $dateStr = formatDate($a['date']);
+    $body = emailWrap("
+        <p>Hola <strong>{$a['name']}</strong>,</p>
+        <p>¡Tu consulta ha quedado confirmada! Aquí tienes los detalles:</p>
+        <div class='detail'>
+            <p><strong>Fecha:</strong> $dateStr</p>
+            <p><strong>Hora:</strong> {$a['time']} (Madrid, hora española)</p>
+            <p><strong>Duración:</strong> 30 minutos · Videollamada</p>
         </div>
         <p>Tu código de reserva es:</p>
         <p class='code'>{$a['code']}</p>
@@ -238,6 +339,19 @@ function sendConfirmationEmail(array $a): void {
         <p>¡Hasta pronto!</p>
     ");
     sendEmail($a['email'], 'Consulta confirmada — ' . $dateStr . ' a las ' . $a['time'], $body);
+}
+
+function sendExpiredEmail(array $a): void {
+    $dateStr = formatDate($a['date']);
+    $chatUrl = SITE_URL . '/#chat';
+    $body = emailWrap("
+        <p>Hola <strong>{$a['name']}</strong>,</p>
+        <p>El enlace para confirmar tu consulta del <strong>$dateStr a las {$a['time']}</strong> ha caducado (tenías 1 hora para confirmar).</p>
+        <p>El hueco ya está de nuevo disponible. Si sigues interesado, puedes volver a reservar en cualquier momento desde el chat de nuestra web:</p>
+        <p><a href='$chatUrl' class='btn'>Volver a reservar</a></p>
+        <p>¡Esperamos verte pronto!</p>
+    ");
+    sendEmail($a['email'], 'Tu reserva ha caducado — Jesús Villamizar AI Agency', $body);
 }
 
 function sendCancellationEmail(array $a): void {
@@ -268,18 +382,17 @@ function sendModificationEmail(array $a): void {
 }
 
 function sendNotificationEmail(string $type, array $a): void {
-    $dateStr = formatDate($a['date']);
+    $dateStr   = formatDate($a['date']);
     $typeLabel = strtoupper($type);
     $body = emailWrap("
-        <p><strong>⚡ Cita $type</strong></p>
+        <p><strong>Nueva cita confirmada</strong></p>
         <div class='detail'>
             <p><strong>Cliente:</strong> {$a['name']}</p>
             <p><strong>Email:</strong> {$a['email']}</p>
             <p><strong>Teléfono:</strong> {$a['phone']}</p>
             <p><strong>Fecha:</strong> $dateStr a las {$a['time']}</p>
             <p><strong>Código:</strong> {$a['code']}</p>
-            <p><strong>Estado:</strong> {$a['status']}</p>
         </div>
     ");
-    sendEmail(NOTIFY_EMAIL, "[$typeLabel] Consulta — {$a['name']} · $dateStr {$a['time']}", $body);
+    sendEmail(NOTIFY_EMAIL, "[$typeLabel] Consulta confirmada — {$a['name']} · $dateStr {$a['time']}", $body);
 }
