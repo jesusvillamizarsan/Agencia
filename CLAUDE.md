@@ -43,21 +43,39 @@ Agencia/
 │   └── ia-con-kit-digital/index.php       # Artículo Kit Digital (hasta 12.000€)
 ├── admin/                                 # Panel admin (protegido)
 ├── php/
-│   ├── chat.php                           # Backend chatbot (OpenAI)
-│   └── contact.php                        # Formulario de contacto (SMTP)
+│   ├── chat.php                           # Backend chatbot (OpenAI GPT-4o-mini)
+│   ├── contact.php                        # Formulario de contacto (SMTP)
+│   ├── appointments.php                   # Lógica de citas (book, confirm, cancel, modify)
+│   └── confirm.php                        # Confirmación de cita por token (email link)
+├── 404.php                                # Página de error 404 personalizada
 ├── css/style.css
 ├── js/main.js                             # i18n, scroll, chat, formulario
-├── .htaccess                              # HTTPS redirect, DirectoryIndex, protege includes/
+├── .htaccess                              # HTTPS redirect, 404, DirectoryIndex, protege includes/
 ├── .env                                   # Credenciales (NO en git)
 └── .env.example
 ```
 
+## Entorno local (agencia.local)
+El sitio funciona completo en local mediante Virtual Host de XAMPP:
+- URL local: `http://agencia.local` (configurado en `httpd-vhosts.conf`)
+- Todos los fetch y rutas absolutas funcionan igual que en producción
+- HTTPS redirect desactivado en local (condicionado por HTTP_HOST en `.htaccess`)
+- Cookie de sesión admin sin `Secure` en local (condicionado por `$_SERVER['HTTPS']`)
+- `SITE_URL` en `appointments.php` es dinámico — local genera links a `http://agencia.local`, producción a `https://jesusvillamizar.com`
+- La carpeta `data/` (availability.json, appointments.json) NO está en git — cada entorno tiene sus propios datos
+
+## Chatbot (chat.php + main.js)
+- Modelo: GPT-4o-mini (OpenAI)
+- Historial: hasta 20 mensajes en localStorage; se envían los últimos 14 al backend como contexto (snapshot antes del mensaje actual para evitar duplicados)
+- Markdown: los mensajes del bot renderizan `**bold**`, `*italic*`, `` `code` `` y saltos de línea
+- Timeout: 30s en el fetch, con mensaje de error diferenciado si se supera
+- Animación de atención: salto + burbuja "¿Hablamos? 💬" cada 12s (primer disparo a los 8s), se detiene al hacer clic
+- System prompt: en inglés, responde en el idioma del usuario; check de disponibilidad obligatorio antes de book; confirma email antes de reservar
+
 ## Rutas de fetch en main.js
-Los fetch usan rutas absolutas para funcionar en todas las páginas:
+Los fetch usan rutas absolutas — funcionan en todas las páginas tanto en local como en producción:
 - `/php/contact.php` (formulario)
 - `/php/chat.php` (chat widget)
-
-> En XAMPP local, estos fetch fallan en subpáginas (resuelven a `localhost/php/...` sin `/Agencia/`). En producción funcionan correctamente.
 
 ## SEO implementado
 - Schema JSON-LD: Person, ProfessionalService, WebSite, FAQPage (home), Service + BreadcrumbList (servicios), LocalBusiness (madrid), Article + FAQPage (blog), Blog
