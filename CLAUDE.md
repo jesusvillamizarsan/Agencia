@@ -40,7 +40,8 @@ Agencia/
 ├── consultoria-ia-para-empresas/index.php # Pillar comercial, schema Service+FAQ
 ├── blog/
 │   ├── index.php                          # Hub del blog
-│   └── ia-con-kit-digital/index.php       # Artículo Kit Digital (hasta 12.000€)
+│   ├── ia-con-kit-digital/index.php       # Artículo Kit Digital (hasta 12.000€)
+│   └── coste-proyecto-ia-espana/index.php # Artículo precios reales de proyectos IA [2026]
 ├── admin/                                 # Panel admin (protegido)
 ├── php/
 │   ├── chat.php                           # Backend chatbot (OpenAI GPT-4o-mini)
@@ -77,10 +78,18 @@ Los fetch usan rutas absolutas — funcionan en todas las páginas tanto en loca
 - `/php/contact.php` (formulario)
 - `/php/chat.php` (chat widget)
 
+## Menú móvil (nav responsive)
+- Breakpoint: 900px — por encima muestra nav horizontal, por debajo hamburguesa
+- Patrón DOM portal: `initMobileMenu()` en `main.js` crea un `<div class="mobile-nav">` y lo appenda a `<body>` (no a `#header`) para escapar del containing block que genera `backdrop-filter` en el header
+- `--header-h` CSS custom property sincronizada desde JS con `header.offsetHeight` para posicionar el overlay
+- Hamburguesa alineada a la derecha: `.nav__actions { margin-left: auto }` en la media query de 900px
+
 ## SEO implementado
+- Sitemap.xml con 20 URLs
 - Schema JSON-LD: Person, ProfessionalService, WebSite, FAQPage (home), Service + BreadcrumbList (servicios), LocalBusiness (madrid), Article + FAQPage (blog), Blog
 - Canonical URLs apuntando a `https://jesusvillamizar.com/`
 - Google Analytics G-YV53NHGT2T (solo si usuario acepta cookies)
+- Artículos de blog publicados: Kit Digital IA (financiación) · Cuánto cuesta proyecto IA España (estrategia)
 
 ## Estado del repositorio Git
 - Repo remoto: https://github.com/jesusvillamizarsan/Agencia
@@ -108,6 +117,10 @@ tk search "texto"                                 # buscar
 
 ## Tickets pendientes
 - `tic-9254` [P1] — SEO Fase 0: verificar conversiones GSC + activar Bing Webmaster Tools *(requiere acción manual en los paneles)*
+
+## Próximos artículos de blog
+- "EU AI Act: qué implica para tu empresa"
+- "RAG vs Fine-tuning: cuándo usar cada uno"
 
 ## .gitignore configurado para ignorar
 - `vendor/`, `node_modules/`
