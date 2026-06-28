@@ -1,27 +1,70 @@
 # Agencia — Contexto del proyecto
 
 ## Stack
-- PHP (XAMPP local)
+- PHP (XAMPP local / Hostinger producción)
 - CSS, JS vanilla
-- Assets: SVG, imágenes
+- Assets: SVG, imágenes, WebP
 
-## Estructura
+## Arquitectura multipágina
+El sitio migró de one-page a arquitectura multipágina. Cada sección tiene su propio directorio con `index.php`.
+
+### Includes compartidos
+```
+includes/
+├── head.php      # <head> completo con meta, OG, JSON-LD, GA, CSS
+├── nav.php       # <header><nav> con URLs absolutas
+└── footer.php    # footer + chat widget + </body></html>
+```
+- Páginas a 1 nivel de profundidad: `require_once '../includes/head.php'`
+- Páginas a 2 niveles: `require_once '../../includes/head.php'`
+- Todos los assets usan rutas absolutas (`/assets/...`, `/css/style.css`, `/js/main.js`)
+
+### Estructura de páginas
 ```
 Agencia/
-├── assets/img/perfilfoto.jpg
-├── assets/logo.svg
+├── index.php                              # Home (landing con i18n ES/EN)
+├── sobre-jesus/index.php                  # Perfil, schema Person, E-E-A-T
+├── servicios/
+│   ├── index.php                          # Hub de servicios
+│   ├── consultoria-estrategica-ia/
+│   ├── chatbots-asistentes-virtuales/
+│   ├── automatizacion-procesos-ia/
+│   ├── agentes-ia-autonomos/
+│   ├── integracion-apis-ia/
+│   ├── machine-learning/
+│   ├── deep-learning/
+│   ├── mlops/
+│   └── agente-de-voz-ia/
+├── contacto/index.php
+├── agencia-ia-madrid/index.php            # Landing local, schema LocalBusiness
+├── consultoria-ia-para-empresas/index.php # Pillar comercial, schema Service+FAQ
+├── blog/
+│   ├── index.php                          # Hub del blog
+│   └── ia-con-kit-digital/index.php       # Artículo Kit Digital (hasta 12.000€)
+├── admin/                                 # Panel admin (protegido)
+├── php/
+│   ├── chat.php                           # Backend chatbot (OpenAI)
+│   └── contact.php                        # Formulario de contacto (SMTP)
 ├── css/style.css
-├── js/main.js
-├── php/chat.php
-├── php/contact.php
-├── index.php
-├── .htaccess
-├── .env.example
-└── .gitignore
+├── js/main.js                             # i18n, scroll, chat, formulario
+├── .htaccess                              # HTTPS redirect, DirectoryIndex, protege includes/
+├── .env                                   # Credenciales (NO en git)
+└── .env.example
 ```
 
+## Rutas de fetch en main.js
+Los fetch usan rutas absolutas para funcionar en todas las páginas:
+- `/php/contact.php` (formulario)
+- `/php/chat.php` (chat widget)
+
+> En XAMPP local, estos fetch fallan en subpáginas (resuelven a `localhost/php/...` sin `/Agencia/`). En producción funcionan correctamente.
+
+## SEO implementado
+- Schema JSON-LD: Person, ProfessionalService, WebSite, FAQPage (home), Service + BreadcrumbList (servicios), LocalBusiness (madrid), Article + FAQPage (blog), Blog
+- Canonical URLs apuntando a `https://jesusvillamizar.com/`
+- Google Analytics G-YV53NHGT2T (solo si usuario acepta cookies)
+
 ## Estado del repositorio Git
-- Repositorio inicializado y conectado a GitHub
 - Repo remoto: https://github.com/jesusvillamizarsan/Agencia
 - Rama principal: `master`
 
@@ -44,6 +87,9 @@ tk close <id>                                     # cerrar
 tk stats                                          # métricas del proyecto
 tk search "texto"                                 # buscar
 ```
+
+## Tickets pendientes
+- `tic-9254` [P1] — SEO Fase 0: verificar conversiones GSC + activar Bing Webmaster Tools *(requiere acción manual en los paneles)*
 
 ## .gitignore configurado para ignorar
 - `vendor/`, `node_modules/`
