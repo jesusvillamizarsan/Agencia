@@ -58,6 +58,9 @@ function processAppointmentTags(string $reply, array $history = [], string $api_
                     $date  = trim($params['date']  ?? '');
                     $time  = trim($params['time']  ?? '');
                     if (!$name || !$email || !$phone || !$date || !$time) return '[faltan datos para reservar]';
+                    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        return '⚠️ El email **' . htmlspecialchars($email, ENT_QUOTES, 'UTF-8') . '** no tiene un formato válido. ¿Puedes confirmarlo? Por ejemplo: nombre@empresa.com';
+                    }
                     $result = bookAppointment($name, $email, $phone, $date, $time);
                     if (!$result['ok']) {
                         $slots = getAvailableSlots($date);
@@ -328,8 +331,9 @@ You can help visitors schedule, check, modify, and cancel 30-minute consultation
 2. Check availability using: [APPT:check:{"date":"YYYY-MM-DD"}]
 3. Present the available slots and let them choose a time.
 4. Collect: full name, email address, and phone number (phone is required — explain it's for sending the video call link before the session).
-5. Once you have all four (date, time, name, email, phone), book using: [APPT:book:{"name":"...","email":"...","phone":"...","date":"YYYY-MM-DD","time":"HH:MM"}]
-6. Place the APPT tag where you want the confirmation result to appear in your message.
+5. Before booking, ALWAYS confirm the email by reading it back: "Voy a confirmar la reserva con el email **[email]** — ¿es correcto?" Wait for explicit confirmation.
+6. Once confirmed, book using: [APPT:book:{"name":"...","email":"...","phone":"...","date":"YYYY-MM-DD","time":"HH:MM"}]
+7. Place the APPT tag where you want the confirmation result to appear in your message.
 
 ### Checking an existing appointment
 Ask for their email and 6-character booking code, then: [APPT:get:{"email":"...","code":"..."}]
@@ -340,12 +344,20 @@ Ask for email and booking code, confirm they want to cancel, then: [APPT:cancel:
 ### Modifying
 Ask for email and booking code to find their appointment, then ask for the new preferred date, check availability, let them pick a time, then: [APPT:modify:{"email":"...","code":"...","date":"YYYY-MM-DD","time":"HH:MM"}]
 
+### Wrong email correction
+If the visitor says they did not receive the confirmation email:
+1. Ask them to verify the email address they provided.
+2. If they give a corrected email, explain that the previous slot will be released automatically in under an hour, and offer to book again with the corrected email (check availability first for the same date/time).
+3. Proceed with a new [APPT:book:...] using the corrected email.
+
 ### Rules
-- ALWAYS check availability before confirming any date/time — never assume a slot is free.
+- MANDATORY: You MUST place [APPT:check:{"date":"YYYY-MM-DD"}] and receive a result showing at least one available slot BEFORE placing [APPT:book:...] for that date. No exceptions — even if the visitor tells you the exact time they want.
+- If [APPT:check:...] returns no available slots, stop the booking flow immediately. Do NOT place [APPT:book:...].
+- If the visitor gives you a specific time that is NOT in the list returned by [APPT:check:...], tell them that slot is unavailable and offer the slots that are available.
 - Collect phone number — it is required for the video call link.
+- ALWAYS read the email back to the visitor and wait for their explicit confirmation before placing the [APPT:book:...] tag.
 - Place the [APPT:...] tag exactly where the system result should appear in your message.
 - Do NOT invent dates, times, codes, or availability — always use the APPT tags to get real data.
-- If a slot is unavailable after checking, offer to check another date.
 - After placing [APPT:book:...], do NOT write any booking details, codes, or confirmation info — the system handles all of that automatically. Only add a brief closing question like "¿Hay algo más en lo que pueda ayudarte?"
 - For relative dates: "next Monday", "this Monday", "el próximo lunes" always means the NEAREST upcoming Monday from today ($today). Never skip to the following week if the nearest Monday is within 7 days.
 - Example booking message: "Perfecto, voy a confirmar tu reserva ahora: [APPT:book:{"name":"Ana López","email":"ana@empresa.com","phone":"+34 600 123 456","date":"2025-01-15","time":"10:00"}] ¿Hay algo más en lo que pueda ayudarte?"
@@ -354,7 +366,7 @@ PROMPT;
 // ── Build messages array ─────────────────────────────────────
 $messages = [['role' => 'system', 'content' => $system]];
 
-foreach (array_slice($history, -8) as $turn) {
+foreach (array_slice($history, -14) as $turn) {
     $role    = $turn['role'] === 'assistant' ? 'assistant' : 'user';
     $content = htmlspecialchars(strip_tags(trim($turn['content'] ?? '')), ENT_QUOTES, 'UTF-8');
     if (!empty($content)) {
@@ -372,7 +384,7 @@ $messages[] = ['role' => 'user', 'content' => $message];
 $payload = json_encode([
     'model'       => 'gpt-4o-mini',
     'messages'    => $messages,
-    'max_tokens'  => 512,
+    'max_tokens'  => 700,
     'temperature' => 0.7,
 ]);
 

@@ -10,7 +10,9 @@ define('APPOINTMENTS_FILE', DATA_DIR . 'appointments.json');
 define('SLOT_DURATION',    30); // minutes
 define('NOTIFY_EMAIL',     'jesusvillamizargo@gmail.com');
 define('SITE_NAME',        'Jesús Villamizar AI Agency');
-define('SITE_URL',         'https://jesusvillamizar.com');
+$_jv_protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
+$_jv_host     = $_SERVER['HTTP_HOST'] ?? 'jesusvillamizar.com';
+define('SITE_URL', $_jv_protocol . '://' . $_jv_host);
 define('CONFIRM_TTL',      3600); // 1 hour in seconds
 
 // ── Load .env ──────────────────────────────────────────────

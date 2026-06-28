@@ -575,6 +575,18 @@ function executeActions(actions) {
 const CHAT_STORAGE_KEY = 'jv_chat_history';
 const CHAT_MAX_STORED  = 20; // máximo de mensajes a persistir
 
+function renderBotMarkdown(raw) {
+  const s = raw
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  return s
+    .replace(/\*\*(.+?)\*\*/gs, '<strong>$1</strong>')
+    .replace(/\*([^*\n]+)\*/g,  '<em>$1</em>')
+    .replace(/`([^`\n]+)`/g,    '<code style="background:rgba(255,255,255,.1);padding:1px 5px;border-radius:3px;font-size:.9em">$1</code>')
+    .replace(/\n/g, '<br>');
+}
+
 function saveChatHistory(hist) {
   try {
     localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(hist.slice(-CHAT_MAX_STORED)));
@@ -617,7 +629,11 @@ function initChatbot() {
       const role = turn.role === 'user' ? 'user' : 'bot';
       const div = document.createElement('div');
       div.className = `chat-msg chat-msg--${role}`;
-      div.textContent = turn.content;
+      if (role === 'bot') {
+        div.innerHTML = renderBotMarkdown(turn.content);
+      } else {
+        div.textContent = turn.content;
+      }
       messages.appendChild(div);
     });
     if (history.length) messages.scrollTop = messages.scrollHeight;
@@ -633,7 +649,11 @@ function initChatbot() {
   function addMessage(text, role) {
     const div = document.createElement('div');
     div.className = `chat-msg chat-msg--${role}`;
-    div.textContent = text;
+    if (role === 'bot') {
+      div.innerHTML = renderBotMarkdown(text);
+    } else {
+      div.textContent = text;
+    }
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
     return div;
@@ -661,17 +681,24 @@ function initChatbot() {
     sendBtn.disabled = true;
 
     addMessage(text, 'user');
+    // Snapshot context BEFORE adding current message to avoid duplicating it in the API call
+    const contextHistory = history.slice(-14);
     history.push({ role: 'user', content: text });
     saveChatHistory(history);
 
     showTyping();
 
+    const controller = new AbortController();
+    const timeoutId  = setTimeout(() => controller.abort(), 30000);
+
     try {
       const res = await fetch('/php/chat.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, history: history.slice(-8) }),
+        body: JSON.stringify({ message: text, history: contextHistory }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
       const data = await res.json();
       hideTyping();
@@ -689,11 +716,13 @@ function initChatbot() {
           : 'Lo siento, ocurrió un error. Por favor intenta de nuevo.';
         addMessage(errMsg, 'bot');
       }
-    } catch {
+    } catch (err) {
+      clearTimeout(timeoutId);
       hideTyping();
+      const isTimeout = err.name === 'AbortError';
       const errMsg = currentLang === 'en'
-        ? 'Connection error. Please try again.'
-        : 'Error de conexión. Por favor intenta de nuevo.';
+        ? (isTimeout ? 'The request took too long. Please try again.' : 'Connection error. Please try again.')
+        : (isTimeout ? 'La respuesta tardó demasiado. Por favor intenta de nuevo.' : 'Error de conexión. Por favor intenta de nuevo.');
       addMessage(errMsg, 'bot');
     } finally {
       isThinking = false;
@@ -708,9 +737,35 @@ function initChatbot() {
   // Pulse CTA animation — stops on first click
   toggle.classList.add('is-pulsing');
 
+  // Periodic attention effect: jump + bubble every 12s, first trigger at 8s
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-bubble';
+  bubble.textContent = '¿Hablamos? 💬';
+  widget.appendChild(bubble);
+
+  let attentionTimer  = null;
+  let attentionDelay  = null;
+
+  function triggerAttention() {
+    if (isOpen) return;
+    bubble.classList.add('is-visible');
+    toggle.classList.add('is-jumping');
+    setTimeout(() => toggle.classList.remove('is-jumping'), 750);
+    setTimeout(() => bubble.classList.remove('is-visible'), 3800);
+  }
+
+  attentionDelay = setTimeout(() => {
+    triggerAttention();
+    attentionTimer = setInterval(triggerAttention, 12000);
+  }, 8000);
+
   // Toggle open/close
   toggle.addEventListener('click', () => {
-    toggle.classList.remove('is-pulsing');
+    clearTimeout(attentionDelay);
+    clearInterval(attentionTimer);
+    bubble.classList.remove('is-visible');
+    toggle.classList.remove('is-pulsing', 'is-jumping');
+
     isOpen = !isOpen;
     widget.classList.toggle('is-open', isOpen);
     window_.setAttribute('aria-hidden', String(!isOpen));

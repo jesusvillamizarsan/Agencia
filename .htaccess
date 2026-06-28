@@ -7,8 +7,12 @@ Options -Indexes
 # ── Default index ──────────────────────────────────────────
 DirectoryIndex index.php index.html
 
-# ── Force HTTPS ─────────────────────────────────────────────
+# ── Custom error pages ─────────────────────────────────────
+ErrorDocument 404 /404.php
+
+# ── Force HTTPS (solo en producción, no en local) ───────────
 RewriteEngine On
+RewriteCond %{HTTP_HOST} !^(localhost|agencia\.local)(:\d+)?$ [NC]
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
