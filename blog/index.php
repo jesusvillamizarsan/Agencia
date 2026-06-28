@@ -36,6 +36,18 @@ require_once '../includes/nav.php';
 
     <article class="service-card reveal" style="padding:2rem;margin-bottom:1.5rem;">
       <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <span style="font-size:.78rem;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;">Estrategia IA</span>
+        <span style="font-size:.78rem;color:var(--text-light);">· 28 junio 2026 · Jesús Villamizar</span>
+      </div>
+      <h2 style="font-family:var(--font-serif);font-size:1.4rem;color:var(--navy);margin-bottom:.75rem;">
+        <a href="/blog/coste-proyecto-ia-espana/" style="color:inherit;text-decoration:none;">Cuánto cuesta un proyecto de IA en España [2026]</a>
+      </h2>
+      <p style="color:var(--text-mid);font-size:.93rem;line-height:1.7;margin-bottom:1.25rem;">Precios reales de proyectos de IA en España: chatbots desde 4.000 €, automatización desde 8.000 €, agentes IA desde 15.000 €. Los factores que más mueven el precio, qué incluye el presupuesto y cuándo tiene ROI claro invertir en IA.</p>
+      <a href="/blog/coste-proyecto-ia-espana/" class="btn btn--gold" style="padding:.55rem 1.4rem;font-size:.88rem;">Leer artículo →</a>
+    </article>
+
+    <article class="service-card reveal" style="padding:2rem;margin-bottom:1.5rem;">
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;">
         <span style="font-size:.78rem;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;">Financiación IA</span>
         <span style="font-size:.78rem;color:var(--text-light);">· 28 junio 2026 · Jesús Villamizar</span>
       </div>
@@ -47,7 +59,7 @@ require_once '../includes/nav.php';
     </article>
 
     <div class="reveal" style="text-align:center;padding:3rem;color:var(--text-light);font-size:.9rem;">
-      <p>Próximos artículos: <em>Cuánto cuesta un proyecto de IA en España [2026]</em> · <em>EU AI Act: qué implica para tu empresa</em> · <em>RAG vs Fine-tuning: cuándo usar cada uno</em></p>
+      <p>Próximos artículos: <em>EU AI Act: qué implica para tu empresa</em> · <em>RAG vs Fine-tuning: cuándo usar cada uno</em></p>
     </div>
 
   </div>

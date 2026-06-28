@@ -403,39 +403,76 @@ function initHeader() {
 function initMobileMenu() {
   const burger = document.getElementById('navBurger');
   const links  = document.getElementById('navLinks');
+  const header = document.getElementById('header');
   if (!burger || !links) return;
 
+  // Sync --header-h with real header height (backdrop-filter on #header makes
+  // position:fixed children relative to it, so we use a body-level portal instead)
+  function syncHeaderHeight() {
+    const h = header ? header.offsetHeight : 72;
+    document.documentElement.style.setProperty('--header-h', h + 'px');
+  }
+  syncHeaderHeight();
+
+  // Build portal as direct child of <body> to escape #header stacking context
+  const portal = document.createElement('div');
+  portal.className = 'mobile-nav';
+  portal.setAttribute('aria-hidden', 'true');
+  portal.setAttribute('role', 'navigation');
+  portal.setAttribute('aria-label', 'Menú de navegación móvil');
+
+  const ul = document.createElement('ul');
+  ul.className = 'mobile-nav__list';
+  links.querySelectorAll('li').forEach(li => ul.appendChild(li.cloneNode(true)));
+
+  // Add CTA button at the bottom
+  const cta = document.createElement('li');
+  cta.innerHTML = '<a href="/contacto/" class="btn btn--gold mobile-nav__cta">Hablar con Jesús</a>';
+  ul.appendChild(cta);
+
+  portal.appendChild(ul);
+  document.body.appendChild(portal);
+
+  function closeMenu() {
+    portal.classList.remove('open');
+    portal.setAttribute('aria-hidden', 'true');
+    burger.classList.remove('open');
+    burger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  burger.setAttribute('aria-expanded', 'false');
+
   burger.addEventListener('click', () => {
-    const open = links.classList.toggle('open');
+    const open = portal.classList.toggle('open');
+    portal.setAttribute('aria-hidden', String(!open));
     burger.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', String(open));
     document.body.style.overflow = open ? 'hidden' : '';
+    if (open) {
+      syncHeaderHeight();
+      portal.querySelector('a')?.focus();
+    }
   });
 
-  // Close on link click
-  links.querySelectorAll('.nav__link').forEach(link => {
-    link.addEventListener('click', () => {
-      links.classList.remove('open');
-      burger.classList.remove('open');
-      document.body.style.overflow = '';
-    });
-  });
+  // Close on any link click inside portal
+  portal.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
 
-  // Close on Escape key
+  // Close clicking the overlay background
+  portal.addEventListener('click', e => { if (e.target === portal) closeMenu(); });
+
+  // Close on Escape
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && links.classList.contains('open')) {
-      links.classList.remove('open');
-      burger.classList.remove('open');
-      document.body.style.overflow = '';
+    if (e.key === 'Escape' && portal.classList.contains('open')) {
+      closeMenu();
+      burger.focus();
     }
   });
 
-  // Close on click outside the nav
-  document.addEventListener('click', e => {
-    if (links.classList.contains('open') && !links.contains(e.target) && !burger.contains(e.target)) {
-      links.classList.remove('open');
-      burger.classList.remove('open');
-      document.body.style.overflow = '';
-    }
+  // Close and unlock body when resizing to desktop
+  window.addEventListener('resize', () => {
+    syncHeaderHeight();
+    if (window.innerWidth > 900 && portal.classList.contains('open')) closeMenu();
   });
 }
 
